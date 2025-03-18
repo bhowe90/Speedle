@@ -1,13 +1,22 @@
 body {
     font-family: Arial, sans-serif;
     text-align: center;
+    background-color: #121212;
+    color: #fff;
 }
 
 .hidden {
     display: none;
 }
 
+#timer {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #0f0;
+    text-shadow: 0 0 10px #0f0;
+}
+
 #game-frame {
-    border: 2px solid black;
+    border: 2px solid #fff;
     margin-top: 10px;
 }
