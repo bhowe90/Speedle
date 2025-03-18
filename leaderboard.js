@@ -1,10 +1,17 @@
-function saveToLeaderboard(username, time) {
+function saveToLeaderboard(username, time, scores) {
     let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
-    leaderboard.push({ username, time });
+    
+    leaderboard.push({ username, time, scores });
     leaderboard.sort((a, b) => a.time - b.time);
+    
     localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
 
     displayLeaderboard();
+}
+
+function isUsernameUsedToday(username) {
+    let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+    return leaderboard.some(entry => entry.username === username);
 }
 
 function displayLeaderboard() {
@@ -14,7 +21,11 @@ function displayLeaderboard() {
 
     leaderboard.forEach((entry, index) => {
         let listItem = document.createElement("li");
-        listItem.innerText = `${index + 1}. ${entry.username} - ${entry.time} sec`;
+        let scoreDetails = Object.entries(entry.scores).map(([game, data]) => 
+            `${game}: ${data.score} (${data.time}s)`
+        ).join(" | ");
+
+        listItem.innerText = `${index + 1}. ${entry.username} - ${entry.time}s | ${scoreDetails}`;
         leaderboardList.appendChild(listItem);
     });
 }
