@@ -1,0 +1,13 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+.hidden {
+    display: none;
+}
+
+#game-frame {
+    border: 2px solid black;
+    margin-top: 10px;
+}
