@@ -5,7 +5,6 @@ function saveToLeaderboard(username, time, scores) {
     leaderboard.sort((a, b) => a.time - b.time);
     
     localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
-
     displayLeaderboard();
 }
 
@@ -22,7 +21,7 @@ function displayLeaderboard() {
     leaderboard.forEach((entry, index) => {
         let listItem = document.createElement("li");
         let scoreDetails = Object.entries(entry.scores).map(([game, data]) => 
-            `${game}: ${data.score} (${data.time}s)`
+            `${game}: ${data.score}/${games.find(g => g.name === game).maxScore}`
         ).join(" | ");
 
         listItem.innerText = `${index + 1}. ${entry.username} - ${entry.time}s | ${scoreDetails}`;
