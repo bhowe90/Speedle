@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Game Speedrun</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="start-screen">
+        <h1>Daily Game Speedrun</h1>
+        <input type="text" id="username" placeholder="Enter your username">
+        <button id="start-btn">Start Speedrun</button>
+    </div>
+
+    <div id="game-screen" class="hidden">
+        <h2 id="game-title">Game 1: TimeGuessr</h2>
+        <iframe id="game-frame" src="" width="100%" height="600px"></iframe>
+        <p id="timer">Time: 00:00</p>
+        <button id="next-game-btn">Next Game</button>
+    </div>
+
+    <div id="leaderboard-screen" class="hidden">
+        <h2>Speedrun Complete!</h2>
+        <p id="final-time"></p>
+        <h3>Leaderboard</h3>
+        <ul id="leaderboard"></ul>
+        <button onclick="restartGame()">Play Again</button>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="leaderboard.js"></script>
+</body>
+</html>
