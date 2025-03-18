@@ -1,9 +1,9 @@
 const games = [
-    { name: "TimeGuessr", url: "https://timeguessr.com/roundonedaily" },
-    { name: "Framed", url: "https://framed.wtf/" },
-    { name: "FoodGuessr", url: "https://www.foodguessr.com/game/daily" },
-    { name: "Thrice", url: "https://thrice.geekswhodrink.com/" },
-    { name: "Bandle", url: "https://bandle.app/" }
+    { name: "TimeGuessr", url: "https://timeguessr.com/roundonedaily", maxScore: 10000 },
+    { name: "Framed", url: "https://framed.wtf/", maxScore: 6 },
+    { name: "FoodGuessr", url: "https://www.foodguessr.com/game/daily", maxScore: 5000 },
+    { name: "Thrice", url: "https://thrice.geekswhodrink.com/", maxScore: 3 },
+    { name: "Bandle", url: "https://bandle.app/", maxScore: 6 }
 ];
 
 let currentGame = 0;
@@ -35,16 +35,13 @@ document.getElementById("start-btn").addEventListener("click", () => {
 function loadGame() {
     if (currentGame < games.length) {
         document.getElementById("game-title").innerText = `Game ${currentGame + 1}: ${games[currentGame].name}`;
-
-        // Open in new tab & track closure
         openTab = window.open(games[currentGame].url, "_blank");
         gameStartTime = performance.now();
 
-        // Check every second if the tab is closed
         let checkTabClosed = setInterval(() => {
             if (openTab.closed) {
                 clearInterval(checkTabClosed);
-                recordGameScore(0); // Assign 0 if they fail
+                recordGameScore(0);
                 currentGame++;
                 loadGame();
             }
@@ -66,17 +63,32 @@ function endSpeedrun() {
     document.getElementById("final-time").innerText = `Your total time: ${totalTime} seconds`;
 
     saveToLeaderboard(username, totalTime, scores);
+    startResetCountdown();
 }
 
 function updateTimer() {
     setInterval(() => {
         if (startTime) {
             let elapsed = ((performance.now() - startTime) / 1000).toFixed(3);
-            document.getElementById("timer").innerText = `Time: ${elapsed} sec`;
+            document.getElementById("timer").innerText = elapsed;
         }
     }, 1);
 }
 
-function restartGame() {
-    location.reload();
+function startResetCountdown() {
+    let now = new Date();
+    let resetTime = new Date();
+    resetTime.setHours(24, 0, 0, 0);
+
+    let countdown = setInterval(() => {
+        let timeLeft = Math.max(0, resetTime - new Date());
+        let hours = Math.floor(timeLeft / (1000 * 60 * 60));
+        let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        document.getElementById("reset-timer").innerText = `Check back in ${hours}h ${minutes}m!`;
+        
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            localStorage.removeItem("leaderboard");
+        }
+    }, 1000);
 }
