@@ -84,3 +84,8 @@ function formatTime(seconds) {
     return `${min}:${sec}:${ms}`;
 }
 
+document.getElementById("return-home-btn").addEventListener("click", () => {
+    location.reload();
+});
+
+
