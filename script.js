@@ -15,8 +15,14 @@ let openTab = null;
 
 document.getElementById("start-btn").addEventListener("click", () => {
     username = document.getElementById("username").value.trim();
+    
     if (!username) {
         alert("Please enter a username!");
+        return;
+    }
+
+    if (typeof isUsernameUsedToday !== "function") {
+        console.error("Error: isUsernameUsedToday function is missing or not loaded.");
         return;
     }
 
@@ -30,9 +36,11 @@ document.getElementById("start-btn").addEventListener("click", () => {
 
     startTime = performance.now();
     gameOrder = [...games].sort(() => Math.random() - 0.5); // Randomize order
+    currentGame = 0;
     loadGame();
     updateTimer();
 });
+
 
 function loadGame() {
     if (currentGame < gameOrder.length) {
