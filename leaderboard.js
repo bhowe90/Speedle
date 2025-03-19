@@ -29,3 +29,11 @@ function formatTime(seconds) {
     let ms = (seconds % 1).toFixed(3).substring(2);
     return `${min}:${sec}:${ms}`;
 }
+
+function isUsernameUsedToday(username) {
+    let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+    let today = new Date().toDateString();
+
+    return leaderboard.some(entry => entry.username === username && entry.date === today);
+}
+
