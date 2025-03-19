@@ -10,6 +10,7 @@ let currentGame = 0;
 let startTime, gameStartTime;
 let username = "";
 let scores = {};
+let gameOrder = [];
 let openTab = null;
 
 document.getElementById("start-btn").addEventListener("click", () => {
@@ -28,14 +29,15 @@ document.getElementById("start-btn").addEventListener("click", () => {
     document.getElementById("game-screen").classList.remove("hidden");
 
     startTime = performance.now();
+    gameOrder = [...games].sort(() => Math.random() - 0.5); // Randomize order
     loadGame();
     updateTimer();
 });
 
 function loadGame() {
-    if (currentGame < games.length) {
-        document.getElementById("game-title").innerText = `Game ${currentGame + 1}: ${games[currentGame].name}`;
-        openTab = window.open(games[currentGame].url, "_blank");
+    if (currentGame < gameOrder.length) {
+        document.getElementById("game-title").innerText = `Game ${currentGame + 1}: ${gameOrder[currentGame].name}`;
+        openTab = window.open(gameOrder[currentGame].url, "_blank");
         gameStartTime = performance.now();
 
         let checkTabClosed = setInterval(() => {
@@ -53,42 +55,15 @@ function loadGame() {
 
 function recordGameScore(score) {
     let elapsed = ((performance.now() - gameStartTime) / 1000).toFixed(2);
-    scores[games[currentGame].name] = { score, time: elapsed };
+    scores[gameOrder[currentGame].name] = { score, time: elapsed };
 }
 
 function endSpeedrun() {
-    let totalTime = ((performance.now() - startTime) / 1000).toFixed(2);
+    let totalTime = ((performance.now() - startTime) / 1000).toFixed(3);
     document.getElementById("game-screen").classList.add("hidden");
     document.getElementById("leaderboard-screen").classList.remove("hidden");
-    document.getElementById("final-time").innerText = `Your total time: ${totalTime} seconds`;
+    document.getElementById("final-time").innerText = `Your total time: ${totalTime}`;
 
-    saveToLeaderboard(username, totalTime, scores);
+    saveToLeaderboard(username, totalTime, scores, gameOrder);
     startResetCountdown();
-}
-
-function updateTimer() {
-    setInterval(() => {
-        if (startTime) {
-            let elapsed = ((performance.now() - startTime) / 1000).toFixed(3);
-            document.getElementById("timer").innerText = elapsed;
-        }
-    }, 1);
-}
-
-function startResetCountdown() {
-    let now = new Date();
-    let resetTime = new Date();
-    resetTime.setHours(24, 0, 0, 0);
-
-    let countdown = setInterval(() => {
-        let timeLeft = Math.max(0, resetTime - new Date());
-        let hours = Math.floor(timeLeft / (1000 * 60 * 60));
-        let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-        document.getElementById("reset-timer").innerText = `Check back in ${hours}h ${minutes}m!`;
-        
-        if (timeLeft <= 0) {
-            clearInterval(countdown);
-            localStorage.removeItem("leaderboard");
-        }
-    }, 1000);
 }
