@@ -75,7 +75,7 @@ function loadGame() {
 
 function saveToLeaderboard(username, time, scores, gameOrder) {
     let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
-    
+
     leaderboard.push({ 
         username, 
         time, 
@@ -87,10 +87,12 @@ function saveToLeaderboard(username, time, scores, gameOrder) {
     leaderboard.sort((a, b) => a.time - b.time);
     
     localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
-    
+
+    // Immediately refresh leaderboard
     displayLeaderboard();
     displayLeaderboardOnHome();
 }
+
 
 
 function recordGameScore(score) {
