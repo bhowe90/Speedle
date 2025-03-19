@@ -7,11 +7,10 @@ const games = [
 ];
 
 let currentGame = 0;
-let startTime, gameStartTime;
+let startTime;
 let username = "";
 let scores = {};
 let gameOrder = [];
-let openTab = null;
 
 document.addEventListener("DOMContentLoaded", function () {
     const startButton = document.getElementById("start-btn");
@@ -52,100 +51,58 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+/** ✅ Load Game in a New Window ✅ */
 function loadGame() {
     if (currentGame < gameOrder.length) {
         let currentGameObj = gameOrder[currentGame];
         document.getElementById("game-title").innerText = `Game ${currentGame + 1}: ${currentGameObj.name}`;
 
-        openTab = window.open(currentGameObj.url, "_blank");
-        gameStartTime = performance.now();
+        console.log(`🕹️ Launching ${currentGameObj.name} in a new window...`);
 
-        console.log(`Loading ${currentGameObj.name}`);
+        // Open game in a **new window** instead of a tab
+        let gameWindow = window.open(currentGameObj.url, "_blank", "width=1200,height=800");
 
-        switch (currentGameObj.name) {
-            case "TimeGuessr":
-                trackTimeGuessrScore();
-                break;
-            case "FoodGuessr":
-                trackFoodGuessrScore();
-                break;
-            default:
-                console.warn(`No event listener implemented yet for ${currentGameObj.name}`);
-        }
+        // Track game completion
+        trackGameWindow(gameWindow, currentGameObj.name);
     } else {
         endSpeedrun();
     }
 }
 
-/** ✅ TimeGuessr Event Listener ✅ */
-function trackTimeGuessrScore() {
-    console.log("🔍 Tracking TimeGuessr page navigation...");
+/** ✅ Track When the Player Finishes a Game ✅ */
+function trackGameWindow(gameWindow, gameName) {
+    console.log(`🔍 Tracking ${gameName} window...`);
 
-    let gameTab = openTab; // The tab where TimeGuessr is running
+    const checkWindow = setInterval(() => {
+        if (!gameWindow || gameWindow.closed) {
+            console.log(`✅ Player closed ${gameName} window!`);
 
-    const checkPageChange = setInterval(() => {
-        try {
-            if (!gameTab || gameTab.closed) {
-                console.warn("⚠️ TimeGuessr tab was closed. Assigning 0 points.");
-                recordGameScore(0);
-                clearInterval(checkPageChange);
-                currentGame++;
-                loadGame();
-                return;
-            }
+            let confirmCompletion = confirm(`Did you finish playing ${gameName}?`);
+            if (confirmCompletion) {
+                let score = prompt(`Enter your final score for ${gameName}:`);
 
-            let currentUrl = gameTab.location.href;
-            console.log("🌐 Current URL:", currentUrl);
-
-            if (currentUrl.includes("dailyroundresults")) {
-                console.log("✅ Player has reached the results page! Searching for score...");
-
-                let scoreElement = gameTab.document.querySelector(".scoretext");
-                if (scoreElement && scoreElement.innerText.trim() !== "") {
-                    let score = parseInt(scoreElement.innerText.trim(), 10) || 0;
-                    console.log(`🏆 TimeGuessr Score Found: ${score}`);
-
-                    recordGameScore(score);
-                    clearInterval(checkPageChange);
-                    currentGame++;
-                    loadGame();
+                if (score && !isNaN(score)) {
+                    console.log(`🏆 Manually Entered Score for ${gameName}: ${score}`);
+                    recordGameScore(parseInt(score, 10));
                 } else {
-                    console.warn("⏳ Score element not found yet, retrying...");
+                    console.warn(`⚠️ Invalid score entered for ${gameName}. Assigning 0.`);
+                    recordGameScore(0);
                 }
-            }
-        } catch (error) {
-            console.warn("⏳ Waiting for page update (cross-origin restrictions may block direct access)...");
-        }
-    }, 1000);
-}
-
-
-/** ✅ FoodGuessr Event Listener ✅ */
-function trackFoodGuessrScore() {
-    console.log("Tracking FoodGuessr score...");
-    
-    const checkScoreInterval = setInterval(() => {
-        try {
-            let score = window.gameState?.currentRound?.score || 0; // Try reading from game state
-            if (score > 0) {
-                console.log("✅ FoodGuessr Score Detected:", score);
-                recordGameScore(score);
-                clearInterval(checkScoreInterval);
-                currentGame++;
-                loadGame();
             } else {
-                console.warn("⏳ Waiting for FoodGuessr score to appear...");
+                console.warn(`⚠️ Player did not complete ${gameName}. Assigning 0.`);
+                recordGameScore(0);
             }
-        } catch (error) {
-            console.error("⚠️ FoodGuessr tracking failed:", error);
+
+            clearInterval(checkWindow);
+            currentGame++;
+            loadGame();
         }
     }, 1000);
 }
-
 
 /** 🏆 Function to Record Game Scores 🏆 */
 function recordGameScore(score) {
-    let elapsed = ((performance.now() - gameStartTime) / 1000).toFixed(2);
+    let elapsed = ((performance.now() - startTime) / 1000).toFixed(2);
     scores[gameOrder[currentGame].name] = { score, time: elapsed };
 
     console.log(`Game ${gameOrder[currentGame].name} completed! Score: ${score}, Time: ${elapsed}s`);
