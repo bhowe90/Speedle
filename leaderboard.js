@@ -20,6 +20,13 @@ function saveToLeaderboard(username, time, scores, gameOrder) {
 function displayLeaderboard() {
     let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
     let leaderboardTable = document.getElementById("leaderboard-table");
+
+    // Ensure the table exists
+    if (!leaderboardTable) {
+        console.error("Leaderboard table not found!");
+        return;
+    }
+
     leaderboardTable.innerHTML = "<tr><th>Rank</th><th>Username</th><th>Time</th><th>Game Order</th><th>Scores</th></tr>";
 
     if (leaderboard.length === 0) {
@@ -37,10 +44,16 @@ function displayLeaderboard() {
     });
 }
 
+
 function displayLeaderboardOnHome() {
     let leaderboardHome = document.getElementById("leaderboard-home");
     let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
     
+    if (!leaderboardHome) {
+        console.error("Leaderboard home section not found!");
+        return;
+    }
+
     if (leaderboard.length === 0) {
         leaderboardHome.innerHTML = "<p>No leaderboard entries yet</p>";
         return;
@@ -58,10 +71,12 @@ function displayLeaderboardOnHome() {
     leaderboardHome.innerHTML = html;
 }
 
+// Ensure leaderboard loads when the page loads
 window.onload = () => {
     displayLeaderboard();
     displayLeaderboardOnHome();
 };
+
 
 function isUsernameUsedToday(username) {
     let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
