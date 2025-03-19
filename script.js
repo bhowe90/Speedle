@@ -80,36 +80,46 @@ function loadGame() {
 /** ✅ TimeGuessr Event Listener ✅ */
 function trackTimeGuessrScore() {
     console.log("Tracking TimeGuessr score...");
+    
     const checkScoreInterval = setInterval(() => {
-        let scoreElement = document.querySelector("#insertTotal");
+        let scoreElement = document.getElementById("insertTotal"); // Ensure it's correctly targeted
 
-        if (scoreElement) {
+        if (scoreElement && scoreElement.innerText) {
             let score = parseInt(scoreElement.innerText) || 0;
-            console.log("TimeGuessr Score Detected:", score);
+            console.log("✅ TimeGuessr Score Detected:", score);
             recordGameScore(score);
             clearInterval(checkScoreInterval);
             currentGame++;
             loadGame();
+        } else {
+            console.warn("⏳ Waiting for TimeGuessr score to appear...");
         }
     }, 1000);
 }
+
 
 /** ✅ FoodGuessr Event Listener ✅ */
 function trackFoodGuessrScore() {
     console.log("Tracking FoodGuessr score...");
+    
     const checkScoreInterval = setInterval(() => {
         try {
-            let score = e.currentRound().score || 0;
-            console.log("FoodGuessr Score Detected:", score);
-            recordGameScore(score);
-            clearInterval(checkScoreInterval);
-            currentGame++;
-            loadGame();
+            let score = window.gameState?.currentRound?.score || 0; // Try reading from game state
+            if (score > 0) {
+                console.log("✅ FoodGuessr Score Detected:", score);
+                recordGameScore(score);
+                clearInterval(checkScoreInterval);
+                currentGame++;
+                loadGame();
+            } else {
+                console.warn("⏳ Waiting for FoodGuessr score to appear...");
+            }
         } catch (error) {
-            console.warn("FoodGuessr score not available yet, retrying...");
+            console.error("⚠️ FoodGuessr tracking failed:", error);
         }
     }, 1000);
 }
+
 
 /** 🏆 Function to Record Game Scores 🏆 */
 function recordGameScore(score) {
