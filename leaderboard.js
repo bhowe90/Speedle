@@ -1,13 +1,21 @@
 function saveToLeaderboard(username, time, scores, gameOrder) {
     let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
     
-    leaderboard.push({ username, time, scores, gameOrder, date: new Date().toDateString() });
+    leaderboard.push({ 
+        username, 
+        time, 
+        scores, 
+        gameOrder, 
+        date: new Date().toDateString() // Store today's date
+    });
+
     leaderboard.sort((a, b) => a.time - b.time);
     
     localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
     displayLeaderboard();
     displayLeaderboardOnHome();
 }
+
 
 function displayLeaderboard() {
     let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
@@ -54,3 +62,11 @@ window.onload = () => {
     displayLeaderboard();
     displayLeaderboardOnHome();
 };
+
+function isUsernameUsedToday(username) {
+    let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+    let today = new Date().toDateString();
+
+    return leaderboard.some(entry => entry.username === username && entry.date === today);
+}
+
