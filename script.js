@@ -79,31 +79,27 @@ function loadGame() {
 
 /** ✅ TimeGuessr Event Listener ✅ */
 function trackTimeGuessrScore() {
-    console.log("🔍 Checking for TimeGuessr score...");
+    console.log("🔍 Waiting for TimeGuessr score...");
 
-    const checkScoreInterval = setInterval(() => {
-        let scoreElement = document.getElementById("insertTotal");
+    // MutationObserver to detect changes in the page
+    const observer = new MutationObserver(() => {
+        let scoreElement = document.querySelector(".scoretext"); // Search by class name instead of ID
 
-        if (!scoreElement) {
-            console.warn("⚠️ Score element #insertTotal not found. Retrying...");
-            return; // Keep checking until element appears
+        if (scoreElement && scoreElement.innerText.trim() !== "") {
+            let score = parseInt(scoreElement.innerText.trim(), 10) || 0;
+            console.log(`✅ TimeGuessr Score Found: ${score}`);
+
+            observer.disconnect(); // Stop observing changes
+            recordGameScore(score);
+            currentGame++;
+            loadGame();
         }
+    });
 
-        let scoreText = scoreElement.innerText.trim();
-        if (!scoreText || isNaN(scoreText)) {
-            console.warn("⏳ Score element found, but no valid number detected. Retrying...");
-            return; // Keep checking if the text is still empty or invalid
-        }
-
-        let score = parseInt(scoreText, 10);
-        console.log(`✅ TimeGuessr Score Detected: ${score}`);
-
-        recordGameScore(score);
-        clearInterval(checkScoreInterval);
-        currentGame++;
-        loadGame();
-    }, 1000);
+    // Start observing changes in the body of the page
+    observer.observe(document.body, { childList: true, subtree: true });
 }
+
 
 
 
