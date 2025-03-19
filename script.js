@@ -130,4 +130,36 @@ document.getElementById("return-home-btn").addEventListener("click", () => {
     location.reload();
 });
 
+function trackTimeGuessrScore() {
+    const checkScoreInterval = setInterval(() => {
+        let scoreElement = document.querySelector("#insertTotal");
+
+        if (scoreElement) {
+            let score = parseInt(scoreElement.innerText) || 0;
+            console.log("TimeGuessr Score Detected:", score);
+            recordGameScore(score);
+            clearInterval(checkScoreInterval);
+            currentGame++;
+            loadGame();
+        }
+    }, 1000);
+}
+
+function trackFoodGuessrScore() {
+    const checkScoreInterval = setInterval(() => {
+        try {
+            let score = e.currentRound().score || 0;
+            console.log("FoodGuessr Score Detected:", score);
+            recordGameScore(score);
+            clearInterval(checkScoreInterval);
+            currentGame++;
+            loadGame();
+        } catch (error) {
+            console.warn("FoodGuessr score not available yet, retrying...");
+        }
+    }, 1000);
+}
+
+
+
 
