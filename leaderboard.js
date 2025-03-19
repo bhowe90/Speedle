@@ -16,6 +16,13 @@ function saveToLeaderboard(username, time, scores, gameOrder) {
     displayLeaderboardOnHome();
 }
 
+function formatTime(seconds) {
+    let min = Math.floor(seconds / 60).toString().padStart(2, '0');
+    let sec = Math.floor(seconds % 60).toString().padStart(2, '0');
+    let ms = (seconds % 1).toFixed(3).substring(2).padStart(3, '0'); // Get milliseconds
+
+    return `${min}m ${sec}s ${ms}ms`;
+}
 
 function displayLeaderboard() {
     let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
@@ -112,7 +119,6 @@ window.onload = () => {
     displayLeaderboard();
     displayLeaderboardOnHome();
 };
-
 
 
 function isUsernameUsedToday(username) {
