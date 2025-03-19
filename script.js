@@ -80,12 +80,12 @@ function loadGame() {
 /** ✅ TimeGuessr Event Listener ✅ */
 function trackTimeGuessrScore() {
     console.log("Tracking TimeGuessr score...");
-    
-    const checkScoreInterval = setInterval(() => {
-        let scoreElement = document.getElementById("insertTotal"); // Ensure it's correctly targeted
 
-        if (scoreElement && scoreElement.innerText) {
-            let score = parseInt(scoreElement.innerText) || 0;
+    const checkScoreInterval = setInterval(() => {
+        let scoreElement = document.getElementById("insertTotal");
+
+        if (scoreElement && scoreElement.innerText.trim() !== "") {
+            let score = parseInt(scoreElement.innerText.trim(), 10) || 0;
             console.log("✅ TimeGuessr Score Detected:", score);
             recordGameScore(score);
             clearInterval(checkScoreInterval);
@@ -96,6 +96,7 @@ function trackTimeGuessrScore() {
         }
     }, 1000);
 }
+
 
 
 /** ✅ FoodGuessr Event Listener ✅ */
