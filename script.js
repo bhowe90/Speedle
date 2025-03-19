@@ -79,29 +79,30 @@ function loadGame() {
 
 /** ✅ TimeGuessr Event Listener ✅ */
 function trackTimeGuessrScore() {
-    console.log("🔍 Waiting for TimeGuessr score...");
+    console.log("🔍 Waiting for TimeGuessr to switch to the results page...");
 
-    // MutationObserver to detect changes in the page
-    const observer = new MutationObserver(() => {
-        let scoreElement = document.querySelector(".scoretext"); // Search by class name instead of ID
+    // Check every second if the player has moved to the results page
+    const checkResultsPage = setInterval(() => {
+        if (window.location.href.includes("timeguessr.com/dailyroundresults")) {
+            console.log("✅ Player is on the results page! Searching for score...");
 
-        if (scoreElement && scoreElement.innerText.trim() !== "") {
-            let score = parseInt(scoreElement.innerText.trim(), 10) || 0;
-            console.log(`✅ TimeGuessr Score Found: ${score}`);
+            // Find the score on the results page
+            let scoreElement = document.querySelector(".scoretext");
 
-            observer.disconnect(); // Stop observing changes
-            recordGameScore(score);
-            currentGame++;
-            loadGame();
+            if (scoreElement && scoreElement.innerText.trim() !== "") {
+                let score = parseInt(scoreElement.innerText.trim(), 10) || 0;
+                console.log(`🏆 TimeGuessr Score Found: ${score}`);
+
+                clearInterval(checkResultsPage); // Stop checking
+                recordGameScore(score);
+                currentGame++;
+                loadGame();
+            } else {
+                console.warn("⏳ Score element not found yet, retrying...");
+            }
         }
-    });
-
-    // Start observing changes in the body of the page
-    observer.observe(document.body, { childList: true, subtree: true });
+    }, 1000);
 }
-
-
-
 
 /** ✅ FoodGuessr Event Listener ✅ */
 function trackFoodGuessrScore() {
