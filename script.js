@@ -13,7 +13,7 @@ let scores = {};
 let gameOrder = [];
 let openTab = null;
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const startButton = document.getElementById("start-btn");
 
     if (!startButton) {
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function() {
         return;
     }
 
-    startButton.addEventListener("click", function() {
+    startButton.addEventListener("click", function () {
         username = document.getElementById("username").value.trim();
 
         if (!username) {
@@ -52,85 +52,34 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-
-
 function loadGame() {
     if (currentGame < gameOrder.length) {
-        document.getElementById("game-title").innerText = `Game ${currentGame + 1}: ${gameOrder[currentGame].name}`;
-        openTab = window.open(gameOrder[currentGame].url, "_blank");
+        let currentGameObj = gameOrder[currentGame];
+        document.getElementById("game-title").innerText = `Game ${currentGame + 1}: ${currentGameObj.name}`;
+
+        openTab = window.open(currentGameObj.url, "_blank");
         gameStartTime = performance.now();
 
-        let checkTabClosed = setInterval(() => {
-            if (openTab.closed) {
-                clearInterval(checkTabClosed);
-                recordGameScore(0);
-                currentGame++;
-                loadGame();
-            }
-        }, 1000);
+        console.log(`Loading ${currentGameObj.name}`);
+
+        switch (currentGameObj.name) {
+            case "TimeGuessr":
+                trackTimeGuessrScore();
+                break;
+            case "FoodGuessr":
+                trackFoodGuessrScore();
+                break;
+            default:
+                console.warn(`No event listener implemented yet for ${currentGameObj.name}`);
+        }
     } else {
         endSpeedrun();
     }
 }
 
-function saveToLeaderboard(username, time, scores, gameOrder) {
-    let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
-
-    leaderboard.push({ 
-        username, 
-        time, 
-        scores, 
-        gameOrder, 
-        date: new Date().toDateString() // Store today's date
-    });
-
-    leaderboard.sort((a, b) => a.time - b.time);
-    
-    localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
-
-    // Immediately refresh leaderboard
-    displayLeaderboard();
-    displayLeaderboardOnHome();
-}
-
-
-
-function recordGameScore(score) {
-    let elapsed = ((performance.now() - gameStartTime) / 1000).toFixed(2);
-    scores[gameOrder[currentGame].name] = { score, time: elapsed };
-}
-
-function endSpeedrun() {
-    let totalTime = ((performance.now() - startTime) / 1000).toFixed(3);
-    document.getElementById("game-screen").classList.add("hidden");
-    document.getElementById("leaderboard-screen").classList.remove("hidden");
-    document.getElementById("final-time").innerText = `Your total time: ${totalTime}`;
-
-    saveToLeaderboard(username, totalTime, scores, gameOrder);
-    startResetCountdown();
-}
-
-function updateTimer() {
-    setInterval(() => {
-        if (startTime) {
-            let elapsed = ((performance.now() - startTime) / 1000).toFixed(3);
-            document.getElementById("timer").innerText = formatTime(elapsed);
-        }
-    }, 1);
-}
-
-function formatTime(seconds) {
-    let min = Math.floor(seconds / 60);
-    let sec = Math.floor(seconds % 60);
-    let ms = (seconds % 1).toFixed(3).substring(2);
-    return `${min}:${sec}:${ms}`;
-}
-
-document.getElementById("return-home-btn").addEventListener("click", () => {
-    location.reload();
-});
-
+/** ✅ TimeGuessr Event Listener ✅ */
 function trackTimeGuessrScore() {
+    console.log("Tracking TimeGuessr score...");
     const checkScoreInterval = setInterval(() => {
         let scoreElement = document.querySelector("#insertTotal");
 
@@ -145,7 +94,9 @@ function trackTimeGuessrScore() {
     }, 1000);
 }
 
+/** ✅ FoodGuessr Event Listener ✅ */
 function trackFoodGuessrScore() {
+    console.log("Tracking FoodGuessr score...");
     const checkScoreInterval = setInterval(() => {
         try {
             let score = e.currentRound().score || 0;
@@ -160,6 +111,43 @@ function trackFoodGuessrScore() {
     }, 1000);
 }
 
+/** 🏆 Function to Record Game Scores 🏆 */
+function recordGameScore(score) {
+    let elapsed = ((performance.now() - gameStartTime) / 1000).toFixed(2);
+    scores[gameOrder[currentGame].name] = { score, time: elapsed };
 
+    console.log(`Game ${gameOrder[currentGame].name} completed! Score: ${score}, Time: ${elapsed}s`);
+}
 
+/** 🏁 End the Speedrun & Save Scores 🏁 */
+function endSpeedrun() {
+    let totalTime = ((performance.now() - startTime) / 1000).toFixed(3);
+    document.getElementById("game-screen").classList.add("hidden");
+    document.getElementById("leaderboard-screen").classList.remove("hidden");
+    document.getElementById("final-time").innerText = `Your total time: ${formatTime(totalTime)}`;
 
+    saveToLeaderboard(username, totalTime, scores, gameOrder);
+}
+
+/** ⏱ Speedrun Timer ⏱ */
+function updateTimer() {
+    setInterval(() => {
+        if (startTime) {
+            let elapsed = ((performance.now() - startTime) / 1000).toFixed(3);
+            document.getElementById("timer").innerText = formatTime(elapsed);
+        }
+    }, 1);
+}
+
+/** ⏱ Format Time as MM:SS:MS ⏱ */
+function formatTime(seconds) {
+    let min = Math.floor(seconds / 60).toString().padStart(2, '0');
+    let sec = Math.floor(seconds % 60).toString().padStart(2, '0');
+    let ms = (seconds % 1).toFixed(3).substring(2).padStart(3, '0');
+    return `${min}m ${sec}s ${ms}ms`;
+}
+
+/** 🔄 Restart Game (Return to Home) 🔄 */
+document.getElementById("return-home-btn").addEventListener("click", () => {
+    location.reload();
+});
