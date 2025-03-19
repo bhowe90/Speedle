@@ -79,21 +79,29 @@ function loadGame() {
 
 /** ✅ TimeGuessr Event Listener ✅ */
 function trackTimeGuessrScore() {
-    console.log("Tracking TimeGuessr score...");
+    console.log("🔍 Checking for TimeGuessr score...");
 
     const checkScoreInterval = setInterval(() => {
         let scoreElement = document.getElementById("insertTotal");
 
-        if (scoreElement && scoreElement.innerText.trim() !== "") {
-            let score = parseInt(scoreElement.innerText.trim(), 10) || 0;
-            console.log("✅ TimeGuessr Score Detected:", score);
-            recordGameScore(score);
-            clearInterval(checkScoreInterval);
-            currentGame++;
-            loadGame();
-        } else {
-            console.warn("⏳ Waiting for TimeGuessr score to appear...");
+        if (!scoreElement) {
+            console.warn("⚠️ Score element #insertTotal not found. Retrying...");
+            return; // Keep checking until element appears
         }
+
+        let scoreText = scoreElement.innerText.trim();
+        if (!scoreText || isNaN(scoreText)) {
+            console.warn("⏳ Score element found, but no valid number detected. Retrying...");
+            return; // Keep checking if the text is still empty or invalid
+        }
+
+        let score = parseInt(scoreText, 10);
+        console.log(`✅ TimeGuessr Score Detected: ${score}`);
+
+        recordGameScore(score);
+        clearInterval(checkScoreInterval);
+        currentGame++;
+        loadGame();
     }, 1000);
 }
 
