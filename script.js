@@ -79,30 +79,46 @@ function loadGame() {
 
 /** ✅ TimeGuessr Event Listener ✅ */
 function trackTimeGuessrScore() {
-    console.log("🔍 Waiting for TimeGuessr to switch to the results page...");
+    console.log("🔍 Tracking TimeGuessr page navigation...");
 
-    // Check every second if the player has moved to the results page
-    const checkResultsPage = setInterval(() => {
-        if (window.location.href.includes("timeguessr.com/dailyroundresults")) {
-            console.log("✅ Player is on the results page! Searching for score...");
+    let gameTab = openTab; // The tab where TimeGuessr is running
 
-            // Find the score on the results page
-            let scoreElement = document.querySelector(".scoretext");
-
-            if (scoreElement && scoreElement.innerText.trim() !== "") {
-                let score = parseInt(scoreElement.innerText.trim(), 10) || 0;
-                console.log(`🏆 TimeGuessr Score Found: ${score}`);
-
-                clearInterval(checkResultsPage); // Stop checking
-                recordGameScore(score);
+    const checkPageChange = setInterval(() => {
+        try {
+            if (!gameTab || gameTab.closed) {
+                console.warn("⚠️ TimeGuessr tab was closed. Assigning 0 points.");
+                recordGameScore(0);
+                clearInterval(checkPageChange);
                 currentGame++;
                 loadGame();
-            } else {
-                console.warn("⏳ Score element not found yet, retrying...");
+                return;
             }
+
+            let currentUrl = gameTab.location.href;
+            console.log("🌐 Current URL:", currentUrl);
+
+            if (currentUrl.includes("dailyroundresults")) {
+                console.log("✅ Player has reached the results page! Searching for score...");
+
+                let scoreElement = gameTab.document.querySelector(".scoretext");
+                if (scoreElement && scoreElement.innerText.trim() !== "") {
+                    let score = parseInt(scoreElement.innerText.trim(), 10) || 0;
+                    console.log(`🏆 TimeGuessr Score Found: ${score}`);
+
+                    recordGameScore(score);
+                    clearInterval(checkPageChange);
+                    currentGame++;
+                    loadGame();
+                } else {
+                    console.warn("⏳ Score element not found yet, retrying...");
+                }
+            }
+        } catch (error) {
+            console.warn("⏳ Waiting for page update (cross-origin restrictions may block direct access)...");
         }
     }, 1000);
 }
+
 
 /** ✅ FoodGuessr Event Listener ✅ */
 function trackFoodGuessrScore() {
