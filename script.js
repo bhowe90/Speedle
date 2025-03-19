@@ -73,6 +73,26 @@ function loadGame() {
     }
 }
 
+function saveToLeaderboard(username, time, scores, gameOrder) {
+    let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+    
+    leaderboard.push({ 
+        username, 
+        time, 
+        scores, 
+        gameOrder, 
+        date: new Date().toDateString() // Store today's date
+    });
+
+    leaderboard.sort((a, b) => a.time - b.time);
+    
+    localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+    
+    displayLeaderboard();
+    displayLeaderboardOnHome();
+}
+
+
 function recordGameScore(score) {
     let elapsed = ((performance.now() - gameStartTime) / 1000).toFixed(2);
     scores[gameOrder[currentGame].name] = { score, time: elapsed };
