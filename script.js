@@ -13,33 +13,45 @@ let scores = {};
 let gameOrder = [];
 let openTab = null;
 
-document.getElementById("start-btn").addEventListener("click", () => {
-    username = document.getElementById("username").value.trim();
-    
-    if (!username) {
-        alert("Please enter a username!");
+document.addEventListener("DOMContentLoaded", function() {
+    const startButton = document.getElementById("start-btn");
+
+    if (!startButton) {
+        console.error("Error: 'Play Speedle' button not found!");
         return;
     }
 
-    if (typeof isUsernameUsedToday !== "function") {
-        console.error("Error: isUsernameUsedToday function is missing or not loaded.");
-        return;
-    }
+    startButton.addEventListener("click", function() {
+        username = document.getElementById("username").value.trim();
 
-    if (isUsernameUsedToday(username)) {
-        alert("This username has already been used today. Please enter a new one.");
-        return;
-    }
+        if (!username) {
+            alert("Please enter a username!");
+            return;
+        }
 
-    document.getElementById("start-screen").classList.add("hidden");
-    document.getElementById("game-screen").classList.remove("hidden");
+        if (typeof isUsernameUsedToday !== "function") {
+            console.error("Error: isUsernameUsedToday function is missing.");
+            return;
+        }
 
-    startTime = performance.now();
-    gameOrder = [...games].sort(() => Math.random() - 0.5); // Randomize order
-    currentGame = 0;
-    loadGame();
-    updateTimer();
+        if (isUsernameUsedToday(username)) {
+            alert("This username has already been used today. Please enter a new one.");
+            return;
+        }
+
+        console.log("Starting game for:", username);
+
+        document.getElementById("start-screen").classList.add("hidden");
+        document.getElementById("game-screen").classList.remove("hidden");
+
+        startTime = performance.now();
+        gameOrder = [...games].sort(() => Math.random() - 0.5); // Random order
+        currentGame = 0;
+        loadGame();
+        updateTimer();
+    });
 });
+
 
 
 function loadGame() {
