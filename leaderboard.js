@@ -19,56 +19,92 @@ function saveToLeaderboard(username, time, scores, gameOrder) {
 
 function displayLeaderboard() {
     let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
-    let leaderboardTable = document.getElementById("leaderboard-table");
+    let leaderboardContainer = document.getElementById("leaderboard-table");
 
-    // Ensure the table exists
-    if (!leaderboardTable) {
-        console.error("Leaderboard table not found!");
+    if (!leaderboardContainer) {
+        console.error("Leaderboard container not found!");
         return;
     }
 
-    leaderboardTable.innerHTML = "<tr><th>Rank</th><th>Username</th><th>Time</th><th>Game Order</th><th>Scores</th></tr>";
+    // Clear previous leaderboard content
+    leaderboardContainer.innerHTML = "";
 
+    // If no entries, show a placeholder message
     if (leaderboard.length === 0) {
-        leaderboardTable.innerHTML += "<tr><td colspan='5'>No entries yet</td></tr>";
+        leaderboardContainer.innerHTML = "<p>No entries yet. Play a game to appear on the leaderboard!</p>";
         return;
     }
+
+    // Create the leaderboard table
+    let html = `<table>
+        <tr>
+            <th>Rank</th>
+            <th>Username</th>
+            <th>Time</th>
+            <th>Game Order</th>
+            <th>Scores</th>
+        </tr>`;
 
     leaderboard.forEach((entry, index) => {
-        let row = leaderboardTable.insertRow();
-        row.innerHTML = `<td>${index < 3 ? ["🥇", "🥈", "🥉"][index] : index + 1}</td>
-                         <td>${entry.username}</td>
-                         <td>${formatTime(entry.time)}</td>
-                         <td>${entry.gameOrder.map(g => g.name).join(" → ")}</td>
-                         <td>${Object.entries(entry.scores).map(([g, s]) => `${g}: ${s.score}/${games.find(x => x.name === g).maxScore}`).join(" | ")}</td>`;
+        let rank = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1;
+
+        let scoreDetails = Object.entries(entry.scores)
+            .map(([game, data]) => `${game}: ${data.score}/${games.find(g => g.name === game).maxScore}`)
+            .join(" | ");
+
+        html += `
+        <tr>
+            <td>${rank}</td>
+            <td>${entry.username}</td>
+            <td>${formatTime(entry.time)}</td>
+            <td>${entry.gameOrder.map(g => g.name).join(" → ")}</td>
+            <td>${scoreDetails}</td>
+        </tr>`;
     });
+
+    html += `</table>`;
+
+    leaderboardContainer.innerHTML = html;
 }
+
 
 
 function displayLeaderboardOnHome() {
     let leaderboardHome = document.getElementById("leaderboard-home");
     let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
-    
+
     if (!leaderboardHome) {
         console.error("Leaderboard home section not found!");
         return;
     }
 
+    leaderboardHome.innerHTML = "<h3>Leaderboard</h3>";
+
     if (leaderboard.length === 0) {
-        leaderboardHome.innerHTML = "<p>No leaderboard entries yet</p>";
+        leaderboardHome.innerHTML += "<p>No leaderboard entries yet</p>";
         return;
     }
 
-    let html = "<h3>Leaderboard</h3><table id='leaderboard-table'><tr><th>Rank</th><th>Username</th><th>Time</th></tr>";
-    
+    let html = `<table>
+        <tr>
+            <th>Rank</th>
+            <th>Username</th>
+            <th>Time</th>
+        </tr>`;
+
     leaderboard.forEach((entry, index) => {
-        html += `<tr><td>${index < 3 ? ["🥇", "🥈", "🥉"][index] : index + 1}</td>
-                 <td>${entry.username}</td>
-                 <td>${formatTime(entry.time)}</td></tr>`;
+        let rank = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1;
+        html += `
+        <tr>
+            <td>${rank}</td>
+            <td>${entry.username}</td>
+            <td>${formatTime(entry.time)}</td>
+        </tr>`;
     });
 
-    html += "</table>";
-    leaderboardHome.innerHTML = html;
+    html += `</table>`;
+
+    leaderboardHome.innerHTML += html;
 }
 
 // Ensure leaderboard loads when the page loads
@@ -76,6 +112,7 @@ window.onload = () => {
     displayLeaderboard();
     displayLeaderboardOnHome();
 };
+
 
 
 function isUsernameUsedToday(username) {
