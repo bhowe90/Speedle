@@ -16,12 +16,23 @@ body {
     text-shadow: 0 0 10px #0f0;
 }
 
-/* Center leaderboard on both home screen and finish screen */
-#leaderboard-home, #leaderboard-table {
+/* Center leaderboard on finish screen */
+#leaderboard-table {
     width: 60%;
     margin: 20px auto; /* Centers it */
     text-align: center;
 }
+
+/* Ensure leaderboard is centered on the home screen */
+#leaderboard-home {
+    width: 60%;
+    margin: 20px auto; /* Centers the leaderboard */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 
 #leaderboard-table table {
     width: 100%;
