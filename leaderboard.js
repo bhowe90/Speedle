@@ -1,12 +1,13 @@
 function saveToLeaderboard(username, time, scores, gameOrder) {
     let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
     
-    leaderboard.push({ username, time, scores, gameOrder });
+    leaderboard.push({ username, time, scores, gameOrder, date: new Date().toDateString() });
     leaderboard.sort((a, b) => a.time - b.time);
     
     localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
     displayLeaderboard();
 }
+
 
 function displayLeaderboard() {
     let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
