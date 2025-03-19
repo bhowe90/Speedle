@@ -6,13 +6,18 @@ function saveToLeaderboard(username, time, scores, gameOrder) {
     
     localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
     displayLeaderboard();
+    displayLeaderboardOnHome();
 }
-
 
 function displayLeaderboard() {
     let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
     let leaderboardTable = document.getElementById("leaderboard-table");
     leaderboardTable.innerHTML = "<tr><th>Rank</th><th>Username</th><th>Time</th><th>Game Order</th><th>Scores</th></tr>";
+
+    if (leaderboard.length === 0) {
+        leaderboardTable.innerHTML += "<tr><td colspan='5'>No entries yet</td></tr>";
+        return;
+    }
 
     leaderboard.forEach((entry, index) => {
         let row = leaderboardTable.insertRow();
@@ -24,17 +29,28 @@ function displayLeaderboard() {
     });
 }
 
-function formatTime(seconds) {
-    let min = Math.floor(seconds / 60);
-    let sec = Math.floor(seconds % 60);
-    let ms = (seconds % 1).toFixed(3).substring(2);
-    return `${min}:${sec}:${ms}`;
-}
-
-function isUsernameUsedToday(username) {
+function displayLeaderboardOnHome() {
+    let leaderboardHome = document.getElementById("leaderboard-home");
     let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
-    let today = new Date().toDateString();
+    
+    if (leaderboard.length === 0) {
+        leaderboardHome.innerHTML = "<p>No leaderboard entries yet</p>";
+        return;
+    }
 
-    return leaderboard.some(entry => entry.username === username && entry.date === today);
+    let html = "<h3>Leaderboard</h3><table id='leaderboard-table'><tr><th>Rank</th><th>Username</th><th>Time</th></tr>";
+    
+    leaderboard.forEach((entry, index) => {
+        html += `<tr><td>${index < 3 ? ["🥇", "🥈", "🥉"][index] : index + 1}</td>
+                 <td>${entry.username}</td>
+                 <td>${formatTime(entry.time)}</td></tr>`;
+    });
+
+    html += "</table>";
+    leaderboardHome.innerHTML = html;
 }
 
+window.onload = () => {
+    displayLeaderboard();
+    displayLeaderboardOnHome();
+};
