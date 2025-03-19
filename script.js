@@ -67,3 +67,20 @@ function endSpeedrun() {
     saveToLeaderboard(username, totalTime, scores, gameOrder);
     startResetCountdown();
 }
+
+function updateTimer() {
+    setInterval(() => {
+        if (startTime) {
+            let elapsed = ((performance.now() - startTime) / 1000).toFixed(3);
+            document.getElementById("timer").innerText = formatTime(elapsed);
+        }
+    }, 1);
+}
+
+function formatTime(seconds) {
+    let min = Math.floor(seconds / 60);
+    let sec = Math.floor(seconds % 60);
+    let ms = (seconds % 1).toFixed(3).substring(2);
+    return `${min}:${sec}:${ms}`;
+}
+
