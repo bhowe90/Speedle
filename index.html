@@ -7,42 +7,71 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+    <!-- ✅ Mode Selection Screen (First thing the user sees) -->
     <div id="mode-selection-screen">
+        <!-- Game Logo -->
         <div id="logo-container">
             <img src="speedle 2.png" alt="Speedle Logo" id="speedle-logo">
         </div>
+
         <h1>Welcome to Speedle</h1>
         <p>Select a game mode:</p>
+
+        <!-- ✅ Mode Selection Buttons -->
         <div class="mode-buttons">
             <button id="daily-mode-btn" class="mode-btn">Daily Mode (5 Games)</button>
             <button id="unlimited-mode-btn" class="mode-btn">Unlimited Mode (3 Games)</button>
         </div>
+
+        <!-- ✅ Description updates dynamically based on selection -->
         <p id="mode-description">Choose a mode to see details.</p>
+
+        <!-- ✅ Username Input Field -->
         <input type="text" id="username" placeholder="Enter your username">
+
+        <!-- ✅ Play Button (Disabled until mode & username are entered) -->
         <button id="play-btn" class="disabled" disabled>Play Speedle</button>
+
+        <!-- ✅ Displays the leaderboard on the home screen -->
         <div id="leaderboard-home"></div>
     </div>
 
+    <!-- ✅ Game Screen (Appears when a speedrun starts) -->
     <div id="game-screen" class="hidden">
-         <div id="logo-container">
+        <!-- Game Logo -->
+        <div id="logo-container">
             <img src="speedle 2.png" alt="Speedle Logo" id="speedle-logo">
         </div>
+
+        <!-- ✅ Displays the current game & round number -->
         <h2 id="game-title"></h2>
-       <div id="timer-container">
-    <p id="speedrun-text">Speedrun Timer:</p>
-    <div id="timer">00m 00s 000ms</div>
-</div>
+
+        <!-- ✅ Speedrun Timer (Styled like LiveSplit) -->
+        <div id="timer-container">
+            <p id="speedrun-text">Speedrun Timer:</p>
+            <div id="timer">00m 00s 000ms</div>
+        </div>
     </div>
 
+    <!-- ✅ Leaderboard Screen (Appears when speedrun is finished) -->
     <div id="leaderboard-screen" class="hidden">
         <h2>Speedrun Complete!</h2>
+
+        <!-- ✅ Displays the player's total time -->
         <p id="final-time"></p>
+
+        <!-- ✅ Leaderboard Table -->
         <h3>Leaderboard</h3>
         <table id="leaderboard-table"></table>
+
+        <!-- ✅ Button to return to the home screen -->
         <button id="return-home-btn">Return to Home</button>
     </div>
 
+    <!-- ✅ JavaScript Files (Handles game logic & leaderboard updates) -->
     <script src="script.js"></script>
     <script src="leaderboard.js"></script>
+
 </body>
 </html>
