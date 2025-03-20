@@ -41,14 +41,15 @@ function checkLeaderboardReset() {
     }
 }
 
-/** ✅ Display Leaderboard on End Screen ✅ */
+/** ✅ Display Leaderboard on End Screen (Formatted & Centered) ✅ */
 function displayLeaderboard(mode) {
     let leaderboardKey = mode === "daily" ? "dailyLeaderboard" : "unlimitedLeaderboard";
     let leaderboard = JSON.parse(localStorage.getItem(leaderboardKey)) || [];
+    let leaderboardContainer = document.getElementById("leaderboard-screen");
     let leaderboardTable = document.getElementById("leaderboard-table");
 
-    if (!leaderboardTable) {
-        console.error(`⚠️ Leaderboard table not found for mode: ${mode}`);
+    if (!leaderboardContainer || !leaderboardTable) {
+        console.error(`⚠️ Leaderboard container/table not found for mode: ${mode}`);
         return;
     }
 
@@ -73,6 +74,9 @@ function displayLeaderboard(mode) {
             <td>${scoreDetails}</td>
         </tr>`;
     });
+
+    // ✅ Ensure leaderboard is visible
+    leaderboardContainer.classList.remove("hidden");
 }
 
 /** ✅ Display Leaderboards on Home Screen ✅ */
