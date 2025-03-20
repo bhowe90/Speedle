@@ -60,6 +60,22 @@ document.addEventListener("DOMContentLoaded", function () {
     playBtn.addEventListener("click", startGame);
 });
 
+function updateTimer() {
+    let timerElement = document.getElementById("timer");
+    
+    if (!timerElement) {
+        console.error("⚠️ Timer element not found!");
+        return;
+    }
+
+    setInterval(() => {
+        if (startTime) {
+            let elapsed = ((performance.now() - startTime) / 1000).toFixed(3);
+            timerElement.innerText = formatTime(elapsed);
+        }
+    }, 1);
+}
+
 
 function startGame(mode) {
     gameMode = mode;
@@ -85,6 +101,7 @@ function startGame(mode) {
     loadGame();
     updateTimer();
 }
+
 
 function loadGame() {
     if (currentGame < gameOrder.length) {
