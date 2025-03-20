@@ -81,13 +81,6 @@ input[type="text"]:focus {
     background-color: #538d4e;
 }
 
-/* ✅ Speedrun Timer Styling */
-#timer {
-    font-size: 24px;
-    font-weight: bold;
-    color: #ffffff;
-}
-
 /* ✅ Green Speedrun Timer Styling */
 #timer {
     font-size: 24px;
