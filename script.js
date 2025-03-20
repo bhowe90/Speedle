@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function startGame(mode) {
     gameMode = mode;
-    username = prompt("Enter your username:");
+    username = document.getElementById("username").value.trim();
 
     if (!username) {
         alert("Please enter a username!");
