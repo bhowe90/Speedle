@@ -115,3 +115,12 @@ button.disabled {
     cursor: not-allowed;
 }
 
+#logo-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#speedle-logo {
+    max-width: 300px; /* Adjust size as needed */
+    height: auto;
+}
