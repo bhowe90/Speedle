@@ -121,6 +121,8 @@ button.disabled {
 }
 
 #speedle-logo {
-    max-width: 300px; /* Adjust size as needed */
+    max-width: 300px;
     height: auto;
+    display: block;
+    margin: 0 auto;
 }
