@@ -23,7 +23,7 @@ function displayLeaderboard(mode) {
     let leaderboardTable = document.getElementById("leaderboard-table");
 
     if (!leaderboardTable) {
-        console.error("⚠️ Leaderboard table not found!");
+        console.error(`⚠️ Leaderboard table not found for mode: ${mode}`);
         return;
     }
 
@@ -49,6 +49,13 @@ function displayLeaderboard(mode) {
         </tr>`;
     });
 }
+
+// ✅ Ensure leaderboards update on page load
+window.onload = () => {
+    displayLeaderboard("daily");
+    displayLeaderboard("unlimited");
+};
+
 
 function displayLeaderboardOnHome() {
     let leaderboardHome = document.getElementById("leaderboard-home");
