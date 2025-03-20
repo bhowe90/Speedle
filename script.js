@@ -169,3 +169,9 @@ function formatTime(seconds) {
     let ms = (seconds % 1).toFixed(3).substring(2).padStart(3, '0');
     return `${min}m ${sec}s ${ms}ms`;
 }
+
+document.getElementById("return-home-btn").addEventListener("click", () => {
+    console.log("🏠 Returning to home screen...");
+    location.reload(); // Properly reloads the page to reset everything
+});
+
