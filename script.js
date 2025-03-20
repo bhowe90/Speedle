@@ -74,4 +74,5 @@ function loadGame() {
 function endSpeedrun() {
     document.getElementById("game-screen").classList.add("hidden");
     document.getElementById("leaderboard-screen").classList.remove("hidden");
+    document.getElementById("return-home-btn").addEventListener("click", () => location.reload());
 }
