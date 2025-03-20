@@ -17,12 +17,49 @@ let startTime;
 let username = "";
 let scores = {};
 let gameOrder = [];
+
+
 let gameMode = ""; // "daily" or "unlimited"
 
 document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("daily-mode-btn").addEventListener("click", () => startGame("daily"));
-    document.getElementById("unlimited-mode-btn").addEventListener("click", () => startGame("unlimited"));
+    const dailyBtn = document.getElementById("daily-mode-btn");
+    const unlimitedBtn = document.getElementById("unlimited-mode-btn");
+    const playBtn = document.getElementById("play-btn");
+    const usernameInput = document.getElementById("username");
+    const modeDescription = document.getElementById("mode-description");
+
+    function selectMode(mode) {
+        gameMode = mode;
+        dailyBtn.classList.remove("selected");
+        unlimitedBtn.classList.remove("selected");
+        if (mode === "daily") {
+            dailyBtn.classList.add("selected");
+            modeDescription.innerText = "Daily Mode includes all 5 games and resets daily.";
+        } else {
+            unlimitedBtn.classList.add("selected");
+            modeDescription.innerText = "Unlimited Mode includes only 3 games and never resets.";
+        }
+        updatePlayButton();
+    }
+
+    function updatePlayButton() {
+        if (gameMode && usernameInput.value.trim() !== "") {
+            playBtn.innerText = `Play Speedle ${gameMode === "daily" ? "Daily" : "Unlimited"}`;
+            playBtn.classList.remove("disabled");
+            playBtn.disabled = false;
+        } else {
+            playBtn.innerText = "Play Speedle";
+            playBtn.classList.add("disabled");
+            playBtn.disabled = true;
+        }
+    }
+
+    dailyBtn.addEventListener("click", () => selectMode("daily"));
+    unlimitedBtn.addEventListener("click", () => selectMode("unlimited"));
+    usernameInput.addEventListener("input", updatePlayButton);
+    playBtn.addEventListener("click", startGame);
 });
+
 
 function startGame(mode) {
     gameMode = mode;
