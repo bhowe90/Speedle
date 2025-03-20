@@ -122,4 +122,16 @@ function formatTime(seconds) {
     return `${min}m ${sec}s ${ms}ms`;
 }
 
+function endSpeedrun() {
+    console.log("🏁 Speedrun complete!");
+
+    document.getElementById("game-screen").classList.add("hidden");
+    document.getElementById("leaderboard-screen").classList.remove("hidden");
+
+    let totalTime = ((performance.now() - startTime) / 1000).toFixed(3);
+    document.getElementById("final-time").innerText = `Your total time: ${formatTime(totalTime)}`;
+
+    saveToLeaderboard(username, totalTime, scores, gameOrder, gameMode);
+}
+
 document.getElementById("return-home-btn").addEventListener("click", () => location.reload());
