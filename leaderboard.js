@@ -86,6 +86,14 @@ function formatLeaderboardTable(leaderboard) {
     return html + "</table>";
 }
 
+// Ensure leaderboards update on page load
+window.onload = () => {
+    displayLeaderboard("daily");
+    displayLeaderboard("unlimited");
+    displayLeaderboardOnHome();
+};
+
+
     // Clear previous leaderboard content
     leaderboardTable.innerHTML = "";
 
@@ -154,9 +162,3 @@ function checkLeaderboardReset() {
     }
 }
 
-// Run reset check on page load
-window.onload = () => {
-    checkLeaderboardReset();
-    displayLeaderboard();
-    displayLeaderboardOnHome();
-};
