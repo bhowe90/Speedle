@@ -72,7 +72,7 @@ function loadGame() {
 
         trackGameWindow(gameWindow, game.name);
     } else {
-        endSpeedrun();
+        endSpeedrun(); // ✅ Properly triggers the end screen
     }
 }
 
@@ -82,6 +82,8 @@ function trackGameWindow(gameWindow, gameName) {
     const checkWindow = setInterval(() => {
         if (!gameWindow || gameWindow.closed) {
             console.log(`✅ Player closed ${gameName} window!`);
+            clearInterval(checkWindow);
+
             let score = prompt(`Enter your final score for ${gameName}:`);
 
             if (score && !isNaN(score)) {
@@ -92,9 +94,14 @@ function trackGameWindow(gameWindow, gameName) {
                 scores[gameName] = 0;
             }
 
-            clearInterval(checkWindow);
             currentGame++;
-            loadGame();
+
+            // ✅ If this was the last game, end the speedrun
+            if (currentGame >= gameOrder.length) {
+                endSpeedrun();
+            } else {
+                loadGame();
+            }
         }
     }, 1000);
 }
