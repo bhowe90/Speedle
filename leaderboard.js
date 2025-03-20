@@ -1,7 +1,7 @@
 function saveToLeaderboard(username, time, scores, gameOrder, mode) {
     let leaderboardKey = mode === "daily" ? "dailyLeaderboard" : "unlimitedLeaderboard";
     let leaderboard = JSON.parse(localStorage.getItem(leaderboardKey)) || [];
-    
+
     leaderboard.push({ 
         username, 
         time, 
@@ -11,12 +11,37 @@ function saveToLeaderboard(username, time, scores, gameOrder, mode) {
     });
 
     leaderboard.sort((a, b) => a.time - b.time);
-    
     localStorage.setItem(leaderboardKey, JSON.stringify(leaderboard));
 
     displayLeaderboard(mode);
 }
 
+/** ✅ Prevent Duplicate Usernames in Daily Mode ✅ */
+function isUsernameUsedToday(username) {
+    let leaderboard = JSON.parse(localStorage.getItem("dailyLeaderboard")) || [];
+    let today = new Date().toDateString();
+
+    return leaderboard.some(entry => entry.username === username && entry.date === today);
+}
+
+/** ✅ Ensure Leaderboard Resets at 12 PM AEST Daily ✅ */
+function checkLeaderboardReset() {
+    let lastReset = localStorage.getItem("lastLeaderboardReset");
+    let now = new Date();
+    let currentDate = now.toDateString();
+    let currentHour = now.getUTCHours(); // Get UTC time
+
+    // Convert 12 PM AEST to UTC (AEST = UTC+10, AEDT = UTC+11)
+    let resetHourUTC = now.getMonth() >= 9 && now.getMonth() <= 3 ? 1 : 2; // Handles AEDT adjustments
+
+    if (lastReset !== currentDate && currentHour >= resetHourUTC) {
+        console.log("🔄 Resetting Daily Leaderboard...");
+        localStorage.setItem("dailyLeaderboard", JSON.stringify([]));
+        localStorage.setItem("lastLeaderboardReset", currentDate);
+    }
+}
+
+/** ✅ Display Leaderboard on End Screen ✅ */
 function displayLeaderboard(mode) {
     let leaderboardKey = mode === "daily" ? "dailyLeaderboard" : "unlimitedLeaderboard";
     let leaderboard = JSON.parse(localStorage.getItem(leaderboardKey)) || [];
@@ -50,13 +75,7 @@ function displayLeaderboard(mode) {
     });
 }
 
-// ✅ Ensure leaderboards update on page load
-window.onload = () => {
-    displayLeaderboard("daily");
-    displayLeaderboard("unlimited");
-};
-
-
+/** ✅ Display Leaderboards on Home Screen ✅ */
 function displayLeaderboardOnHome() {
     let leaderboardHome = document.getElementById("leaderboard-home");
     let dailyLeaderboard = JSON.parse(localStorage.getItem("dailyLeaderboard")) || [];
@@ -76,6 +95,7 @@ function displayLeaderboardOnHome() {
     leaderboardHome.innerHTML += formatLeaderboardTable(unlimitedLeaderboard);
 }
 
+/** ✅ Format Leaderboard Data into a Table ✅ */
 function formatLeaderboardTable(leaderboard) {
     if (leaderboard.length === 0) {
         return "<p>No leaderboard entries yet</p>";
@@ -93,79 +113,18 @@ function formatLeaderboardTable(leaderboard) {
     return html + "</table>";
 }
 
-// Ensure leaderboards update on page load
+/** ✅ Format Time as MM:SS:MS ✅ */
+function formatTime(seconds) {
+    let min = Math.floor(seconds / 60).toString().padStart(2, '0');
+    let sec = Math.floor(seconds % 60).toString().padStart(2, '0');
+    let ms = (seconds % 1).toFixed(3).substring(2).padStart(3, '0');
+    return `${min}m ${sec}s ${ms}ms`;
+}
+
+// ✅ Ensure leaderboards update on page load
 window.onload = () => {
+    checkLeaderboardReset();
     displayLeaderboard("daily");
     displayLeaderboard("unlimited");
     displayLeaderboardOnHome();
 };
-
-
-    // Clear previous leaderboard content
-    leaderboardTable.innerHTML = "";
-
-    // If no entries, show a placeholder message
-    if (leaderboard.length === 0) {
-        leaderboardTable.innerHTML = "<p>No entries yet. Play a game to appear on the leaderboard!</p>";
-        return;
-    }
-
-    // Create the leaderboard table
-    let html = `<table>
-        <tr>
-            <th>Rank</th>
-            <th>Username</th>
-            <th>Time</th>
-            <th>Game Order</th>
-            <th>Scores</th>
-        </tr>`;
-
-    leaderboard.forEach((entry, index) => {
-        let rank = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1;
-
-        let scoreDetails = Object.entries(entry.scores)
-            .map(([game, data]) => `${game}: ${data.score}/${games.find(g => g.name === game).maxScore}`)
-            .join(" | ");
-
-        html += `
-        <tr>
-            <td>${rank}</td>
-            <td>${entry.username}</td>
-            <td>${formatTime(entry.time)}</td>
-            <td>${entry.gameOrder.map(g => g.name).join(" → ")}</td>
-            <td>${scoreDetails}</td>
-        </tr>`;
-    });
-
-    html += `</table>`;
-
-    leaderboardTable.innerHTML = html;
-}
-
-/** ✅ Prevent Duplicate Usernames in the Same Day ✅ */
-function isUsernameUsedToday(username) {
-    let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
-    let today = new Date().toDateString();
-
-    return leaderboard.some(entry => entry.username === username && entry.date === today);
-}
-
-/** ✅ Ensure Leaderboard Resets at 12 PM AEST Daily ✅ */
-function checkLeaderboardReset() {
-    let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
-    let lastReset = localStorage.getItem("lastLeaderboardReset");
-
-    let now = new Date();
-    let currentDate = now.toDateString();
-    let currentHour = now.getUTCHours(); // Get UTC time
-
-    // Convert 12 PM AEST to UTC (AEST = UTC+10, AEDT = UTC+11)
-    let resetHourUTC = now.getMonth() >= 9 && now.getMonth() <= 3 ? 1 : 2; // Handles AEDT adjustments
-
-    if (lastReset !== currentDate && currentHour >= resetHourUTC) {
-        console.log("🔄 Resetting leaderboard for a new day...");
-        localStorage.setItem("leaderboard", JSON.stringify([]));
-        localStorage.setItem("lastLeaderboardReset", currentDate);
-    }
-}
-
