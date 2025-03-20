@@ -48,11 +48,55 @@ function updatePlayButton() {
 }
 
 function startGame() {
+    console.log("🎮 Starting game...");
     document.getElementById("mode-selection-screen").classList.add("hidden");
     document.getElementById("game-screen").classList.remove("hidden");
+
     startTime = performance.now();
     updateTimer();
+
+    gameOrder = gameMode === "daily" ? [...dailyGames] : [...unlimitedGames];
+    gameOrder.sort(() => Math.random() - 0.5);
+    
+    currentGame = 0;
     loadGame();
+}
+
+function loadGame() {
+    if (currentGame < gameOrder.length) {
+        let game = gameOrder[currentGame];
+        document.getElementById("game-title").innerText = `Game ${currentGame + 1}: ${game.name}`;
+
+        console.log(`🕹️ Opening ${game.name}`);
+        let gameWindow = window.open(game.url, "_blank", "width=1200,height=800");
+
+        trackGameWindow(gameWindow, game.name);
+    } else {
+        endSpeedrun();
+    }
+}
+
+function trackGameWindow(gameWindow, gameName) {
+    console.log(`🔍 Tracking ${gameName} window...`);
+
+    const checkWindow = setInterval(() => {
+        if (!gameWindow || gameWindow.closed) {
+            console.log(`✅ Player closed ${gameName} window!`);
+            let score = prompt(`Enter your final score for ${gameName}:`);
+
+            if (score && !isNaN(score)) {
+                console.log(`🏆 Score for ${gameName}: ${score}`);
+                scores[gameName] = parseInt(score, 10);
+            } else {
+                console.warn(`⚠️ Invalid score entered for ${gameName}. Assigning 0.`);
+                scores[gameName] = 0;
+            }
+
+            clearInterval(checkWindow);
+            currentGame++;
+            loadGame();
+        }
+    }, 1000);
 }
 
 function updateTimer() {
