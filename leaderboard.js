@@ -1,5 +1,6 @@
-function saveToLeaderboard(username, time, scores, gameOrder) {
-    let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+function saveToLeaderboard(username, time, scores, gameOrder, mode) {
+    let leaderboardKey = mode === "daily" ? "dailyLeaderboard" : "unlimitedLeaderboard";
+    let leaderboard = JSON.parse(localStorage.getItem(leaderboardKey)) || [];
     
     leaderboard.push({ 
         username, 
@@ -11,11 +12,18 @@ function saveToLeaderboard(username, time, scores, gameOrder) {
 
     leaderboard.sort((a, b) => a.time - b.time);
     
-    localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+    localStorage.setItem(leaderboardKey, JSON.stringify(leaderboard));
 
-    displayLeaderboard();
-    displayLeaderboardOnHome();
+    displayLeaderboard(mode);
 }
+
+function displayLeaderboard(mode) {
+    let leaderboardKey = mode === "daily" ? "dailyLeaderboard" : "unlimitedLeaderboard";
+    let leaderboard = JSON.parse(localStorage.getItem(leaderboardKey)) || [];
+    
+    console.log(`🏆 Displaying ${mode.toUpperCase()} leaderboard...`);
+}
+
 
 function displayLeaderboardOnHome() {
     let leaderboardHome = document.getElementById("leaderboard-home");
