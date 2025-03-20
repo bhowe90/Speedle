@@ -81,12 +81,6 @@ input[type="text"]:focus {
     background-color: #538d4e;
 }
 
-/* ✅ Green Speedrun Timer Styling */
-#timer {
-    font-size: 24px;
-    font-weight: bold;
-    color: #6aaa64; /* Match logo color */
-}
 
 #speedrun-text {
     font-size: 20px;
@@ -136,4 +130,22 @@ input[type="text"]:focus {
     background-color: #538d4e;
 }
 
+/* ✅ LiveSplit Style Timer */
+#timer-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#timer {
+    font-size: 36px;
+    font-weight: bold;
+    color: #6aaa64; /* Match logo color */
+    font-family: 'Courier New', Courier, monospace;
+    background: black;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: inline-block;
+}
 
