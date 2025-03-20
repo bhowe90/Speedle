@@ -87,4 +87,31 @@ input[type="text"]:focus {
     outline: none;
 }
 
+/* Styling for mode selection buttons */
+.mode-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.mode-btn {
+    background-color: #ccc;
+    border: none;
+    padding: 12px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+}
+
+.mode-btn.selected {
+    background-color: #6aaa64;
+    color: white;
+}
+
+button.disabled {
+    background-color: #bbb;
+    cursor: not-allowed;
+}
 
