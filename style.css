@@ -87,3 +87,17 @@ input[type="text"]:focus {
     font-weight: bold;
     color: #ffffff;
 }
+
+/* ✅ Green Speedrun Timer Styling */
+#timer {
+    font-size: 24px;
+    font-weight: bold;
+    color: #6aaa64; /* Match logo color */
+}
+
+#speedrun-text {
+    font-size: 20px;
+    font-weight: bold;
+    color: #6aaa64; /* Match logo color */
+}
+
