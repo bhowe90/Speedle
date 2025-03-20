@@ -7,12 +7,20 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="start-screen">
-        <h1>Speedle</h1>
-        <input type="text" id="username" placeholder="Enter your username">
-        <button id="start-btn">Play Speedle</button>
-        <div id="leaderboard-home"></div> <!-- Leaderboard on home page -->
+<div id="mode-selection-screen">
+    <h1>Speedle</h1>
+    <p>Select a game mode:</p>
+    <div class="mode-buttons">
+        <button id="daily-mode-btn" class="mode-btn">Daily Mode (5 Games)</button>
+        <button id="unlimited-mode-btn" class="mode-btn">Unlimited Mode (3 Games)</button>
     </div>
+    <p id="mode-description">Choose a mode to see details.</p>
+
+    <input type="text" id="username" placeholder="Enter your username">
+    <button id="play-btn" class="disabled" disabled>Play Speedle</button>
+
+    <div id="leaderboard-home"></div> <!-- Home screen leaderboard -->
+</div>
 
     <div id="game-screen" class="hidden">
         <h2 id="game-title">Game 1: TimeGuessr</h2>
@@ -29,13 +37,6 @@
     <button id="return-home-btn">Return to Home</button>
 </div>
     
-    <div id="mode-selection-screen">
-    <h1>Speedle</h1>
-    <p>Select a game mode:</p>
-    <button id="daily-mode-btn">Daily Mode (5 Games)</button>
-    <button id="unlimited-mode-btn">Unlimited Mode (3 Games)</button>
-</div>
-
     <script src="script.js"></script>
     <script src="leaderboard.js"></script>
 </body>
