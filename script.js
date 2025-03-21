@@ -116,11 +116,11 @@ function trackGameWindow(gameWindow, gameName) {
             let score = prompt(`Enter your final score for ${gameName}:`);
 
             if (score && !isNaN(score)) {
-                console.log(`🏆 Score for ${gameName}: ${score}`);
-                scores[gameName] = parseInt(score, 10);
+                console.log(`🏆 Score recorded for ${gameName}: ${score}`);
+                scores[gameName] = { score: parseInt(score, 10) }; // ✅ Store score as an object
             } else {
                 console.warn(`⚠️ Invalid score entered for ${gameName}. Assigning 0.`);
-                scores[gameName] = 0;
+                scores[gameName] = { score: 0 }; // ✅ Store default value correctly
             }
 
             currentGame++;
