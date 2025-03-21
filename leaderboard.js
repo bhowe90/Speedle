@@ -65,7 +65,7 @@ function checkLeaderboardReset() {
 
 /**
  * ✅ Displays the leaderboard on the END SCREEN
- * ✅ Shows rank, username, time, game order, and scores
+ * ✅ Fixes the issue where scores were appearing as "undefined"
  */
 function displayLeaderboard(mode) {
     console.log(`📊 Displaying ${mode} leaderboard...`);
@@ -89,8 +89,10 @@ function displayLeaderboard(mode) {
 
     leaderboard.forEach((entry, index) => {
         let rank = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1;
+
+        // ✅ Fix how scores are displayed
         let scoreDetails = Object.entries(entry.scores)
-            .map(([game, data]) => `${game}: ${data.score}`)
+            .map(([game, data]) => `${game}: ${data && data.score !== undefined ? data.score : 0}`) // ✅ Prevent "undefined" values
             .join(" | ");
 
         leaderboardTable.innerHTML += `<tr>
@@ -101,7 +103,7 @@ function displayLeaderboard(mode) {
             <td>${scoreDetails}</td>
         </tr>`;
 
-        console.log(`🏆 ${rank} - ${entry.username}: ${entry.time}s`);
+        console.log(`🏆 ${rank} - ${entry.username}: ${entry.time}s, Scores: ${scoreDetails}`);
     });
 }
 
