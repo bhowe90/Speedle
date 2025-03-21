@@ -106,12 +106,12 @@ function displayLeaderboard(mode) {
 }
 
 /**
- * ✅ Displays the leaderboard on the HOME SCREEN
- * ✅ Shows separate leaderboards for Daily & Unlimited Mode
+ * ✅ Displays the leaderboards on the HOME SCREEN
+ * ✅ Ensures proper formatting and centering
  */
 function displayLeaderboardOnHome() {
     console.log("🏠 Displaying leaderboards on home screen...");
-    
+
     let leaderboardHome = document.getElementById("leaderboard-home");
     let dailyLeaderboard = JSON.parse(localStorage.getItem("dailyLeaderboard")) || [];
     let unlimitedLeaderboard = JSON.parse(localStorage.getItem("unlimitedLeaderboard")) || [];
@@ -121,13 +121,13 @@ function displayLeaderboardOnHome() {
         return;
     }
 
-    leaderboardHome.innerHTML = "<h3>Leaderboards</h3>";
-
-    leaderboardHome.innerHTML += "<h4>Daily Mode</h4>";
-    leaderboardHome.innerHTML += formatLeaderboardTable(dailyLeaderboard);
-
-    leaderboardHome.innerHTML += "<h4>Unlimited Mode</h4>";
-    leaderboardHome.innerHTML += formatLeaderboardTable(unlimitedLeaderboard);
+    leaderboardHome.innerHTML = `
+        <h3>Leaderboards</h3>
+        <h4>Daily Mode</h4>
+        ${formatLeaderboardTable(dailyLeaderboard)}
+        <h4>Unlimited Mode</h4>
+        ${formatLeaderboardTable(unlimitedLeaderboard)}
+    `;
 }
 
 /**
