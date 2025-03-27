@@ -67,9 +67,9 @@ function updatePlayButton() {
 }
 
 function startGame() {
-    console.log("🎮 Starting game...");
+    console.log("🎮 Attempting to start game...");
 
-    // Check if the player has already played today in Daily Mode
+    // ✅ If player is in Daily Mode, check if they have already played today
     if (gameMode === "daily") {
         let leaderboardKey = "dailyLeaderboard";
         let leaderboard = JSON.parse(localStorage.getItem(leaderboardKey)) || [];
@@ -78,17 +78,32 @@ function startGame() {
         let existingEntry = leaderboard.find(entry => entry.username === username && entry.date === today);
 
         if (existingEntry) {
-            // ✅ Player has already completed today's Speedle!
+            // 🚫 Player has already submitted a score today
             let rank = leaderboard.findIndex(entry => entry.username === username) + 1;
             let timeUntilReset = getTimeUntilMidnight();
 
             alert(`🚫 You have already completed your daily Speedle today!\n🏆 You are currently #${rank} on the leaderboard!\n⏳ Check back in ${timeUntilReset} to play again, or try Unlimited Mode!`);
 
-            // ✅ Force refresh of leaderboard on home screen
+            // ✅ Ensure leaderboard updates on home screen
             displayLeaderboard("daily");
             return; // Stop game from starting
         }
     }
+
+    // ✅ Proceed with game if no existing entry for Daily Mode
+    document.getElementById("mode-selection-screen").classList.add("hidden");
+    document.getElementById("game-screen").classList.remove("hidden");
+
+    startTime = performance.now();
+    updateTimer();
+
+    gameOrder = gameMode === "daily" ? [...dailyGames] : [...unlimitedGames];
+    gameOrder.sort(() => Math.random() - 0.5);
+
+    currentGame = 0;
+    loadGame();
+}
+
 
     // ✅ Proceed with starting the game if no duplicate entry
     document.getElementById("mode-selection-screen").classList.add("hidden");
