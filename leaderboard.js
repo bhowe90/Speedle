@@ -16,16 +16,11 @@ function saveToLeaderboard(username, completionTime, scores, gameOrder, gameMode
         return; // 🚫 Don't allow replays
     }
 
-    // ✅ Compute final rank score (70% score, 30% speed)
-    let scoreRank = calculateScoreRank(totalScore, leaderboard);
-    let speedRank = calculateSpeedRank(completionTime, leaderboard);
-    let finalScore = (0.7 * scoreRank) + (0.3 * speedRank);
-
     // ✅ Save the new entry
-    leaderboard.push({ username, totalScore, completionTime, finalScore, date: today });
+    leaderboard.push({ username, totalScore, completionTime, scores, gameOrder, date: today });
 
-    // ✅ Sort by final score (higher is better)
-    leaderboard.sort((a, b) => b.finalScore - a.finalScore);
+    // ✅ Sort by total score (highest is best)
+    leaderboard.sort((a, b) => b.totalScore - a.totalScore);
     localStorage.setItem(leaderboardKey, JSON.stringify(leaderboard));
 
     // ✅ Refresh the leaderboard display
@@ -34,50 +29,38 @@ function saveToLeaderboard(username, completionTime, scores, gameOrder, gameMode
     console.log(`✅ Leaderboard updated for ${gameMode}. Total entries: ${leaderboard.length}`);
 }
 
-
 /**
- * ✅ Checks if a username has already played Daily Mode today
- * ✅ Prevents duplicate entries in the same daily session
+ * ✅ Prevents duplicate daily entries
  */
 function isUsernameUsedToday(username) {
     let leaderboard = JSON.parse(localStorage.getItem("dailyLeaderboard")) || [];
     let today = new Date().toDateString();
-
-    let used = leaderboard.some(entry => entry.username === username && entry.date === today);
-    console.log(`🔍 Checking if username "${username}" has been used today: ${used ? "❌ YES (Duplicate)" : "✅ NO (Unique)"} `);
-    return used;
+    return leaderboard.some(entry => entry.username === username && entry.date === today);
 }
 
 /**
- * ✅ Resets the Daily leaderboard at 12 PM AEST (UTC+10 or UTC+11 in AEDT)
- * ✅ Prevents incorrect leaderboard carryover across multiple days
+ * ✅ Resets the Daily leaderboard at 12 PM AEST (UTC+10 / UTC+11 in AEDT)
  */
 function checkLeaderboardReset() {
     let lastReset = localStorage.getItem("lastLeaderboardReset");
     let now = new Date();
     let currentDate = now.toDateString();
-    let currentHour = now.getUTCHours(); // Get UTC time
+    let currentHour = now.getUTCHours();
 
-    // Convert 12 PM AEST to UTC (AEST = UTC+10, AEDT = UTC+11)
-    let resetHourUTC = now.getMonth() >= 9 && now.getMonth() <= 3 ? 1 : 2; // Handles AEDT adjustments
-
-    console.log(`⏳ Checking leaderboard reset... Current UTC Time: ${currentHour}, Reset Hour UTC: ${resetHourUTC}`);
+    let resetHourUTC = (now.getMonth() >= 9 && now.getMonth() <= 3) ? 1 : 2; // 1 AM UTC (AEDT), 2 AM UTC (AEST)
 
     if (lastReset !== currentDate && currentHour >= resetHourUTC) {
         console.log("🔄 Resetting Daily Leaderboard...");
         localStorage.setItem("dailyLeaderboard", JSON.stringify([]));
         localStorage.setItem("lastLeaderboardReset", currentDate);
-    } else {
-        console.log("✅ No reset needed. Leaderboard is up to date.");
     }
 }
 
 /**
  * ✅ Displays the leaderboard on the END SCREEN
- * ✅ Uses Speed & Accuracy Rank-Based System (70% Score, 30% Speed)
  */
 function displayLeaderboard(mode) {
-    console.log(`📊 Displaying ${mode} leaderboard with ranking system...`);
+    console.log(`📊 Displaying ${mode} leaderboard...`);
 
     let leaderboardKey = mode === "daily" ? "dailyLeaderboard" : "unlimitedLeaderboard";
     let leaderboard = JSON.parse(localStorage.getItem(leaderboardKey)) || [];
@@ -88,68 +71,26 @@ function displayLeaderboard(mode) {
         return;
     }
 
-    leaderboardTable.innerHTML = "<tr><th>Rank</th><th>Username</th><th>Final Score</th><th>Time</th><th>Game Order</th><th>Scores</th></tr>";
+    leaderboardTable.innerHTML = "<tr><th>Rank</th><th>Username</th><th>Score</th><th>Time</th></tr>";
 
     if (leaderboard.length === 0) {
-        console.log("ℹ️ No leaderboard entries yet.");
-        leaderboardTable.innerHTML += "<tr><td colspan='6'>No entries yet</td></tr>";
+        leaderboardTable.innerHTML += "<tr><td colspan='4'>No entries yet</td></tr>";
         return;
     }
 
-    // ✅ Step 1: Extract Scores & Times
-    let scoreRankings = leaderboard.map(entry => ({
-        username: entry.username,
-        baseScore: Object.values(entry.scores).reduce((sum, game) => sum + game.score, 0),
-        completionTime: entry.time
-    }));
-
-    // ✅ Step 2: Rank Players by Score (Higher is better)
-    scoreRankings.sort((a, b) => b.baseScore - a.baseScore);
-    scoreRankings.forEach((player, index) => {
-        player.scoreRank = ((scoreRankings.length - index - 1) / (scoreRankings.length - 1)) * 100 || 100;
-    });
-
-    // ✅ Step 3: Rank Players by Speed (Lower is better)
-    scoreRankings.sort((a, b) => a.completionTime - b.completionTime);
-    scoreRankings.forEach((player, index) => {
-        player.speedRank = ((scoreRankings.length - index - 1) / (scoreRankings.length - 1)) * 100 || 100;
-    });
-
-    // ✅ Step 4: Compute Final Score (70% Score Rank + 30% Speed Rank)
-    const weightScore = 70;
-    const weightSpeed = 30;
-
-    scoreRankings.forEach(player => {
-        player.finalScore = ((weightScore * player.scoreRank) + (weightSpeed * player.speedRank)) / 100;
-    });
-
-    // ✅ Step 5: Sort by Final Score
-    scoreRankings.sort((a, b) => b.finalScore - a.finalScore);
-
-    // ✅ Step 6: Display the Leaderboard
-    scoreRankings.forEach((player, index) => {
-        let entry = leaderboard.find(entry => entry.username === player.username);
+    leaderboard.forEach((entry, index) => {
         let rank = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1;
-        let scoreDetails = Object.entries(entry.scores)
-            .map(([game, data]) => `${game}: ${data.score}`)
-            .join(" | ");
-
         leaderboardTable.innerHTML += `<tr>
             <td>${rank}</td>
             <td>${entry.username}</td>
-            <td>${player.finalScore.toFixed(2)}</td>
-            <td>${formatTime(entry.time)}</td>
-            <td>${entry.gameOrder.map(g => g.name).join(" → ")}</td>
-            <td>${scoreDetails}</td>
+            <td>${entry.totalScore}</td>
+            <td>${formatTime(entry.completionTime)}</td>
         </tr>`;
-
-        console.log(`🏆 ${rank} - ${entry.username}: Final Score ${player.finalScore.toFixed(2)}`);
     });
 }
 
 /**
  * ✅ Displays the leaderboards on the HOME SCREEN
- * ✅ Ensures proper formatting and centering
  */
 function displayLeaderboardOnHome() {
     console.log("🏠 Displaying leaderboards on home screen...");
@@ -180,13 +121,14 @@ function formatLeaderboardTable(leaderboard) {
         return "<p>No leaderboard entries yet</p>";
     }
 
-    let html = `<table><tr><th>Rank</th><th>Username</th><th>Time</th></tr>`;
+    let html = `<table><tr><th>Rank</th><th>Username</th><th>Score</th><th>Time</th></tr>`;
     leaderboard.forEach((entry, index) => {
         let rank = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1;
         html += `<tr>
             <td>${rank}</td>
             <td>${entry.username}</td>
-            <td>${formatTime(entry.time)}</td>
+            <td>${entry.totalScore}</td>
+            <td>${formatTime(entry.completionTime)}</td>
         </tr>`;
     });
     return html + "</table>";
