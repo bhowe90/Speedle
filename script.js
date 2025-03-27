@@ -66,23 +66,56 @@ function updatePlayButton() {
     }
 }
 
-/**
- * ✅ Starts the speedrun
- */
 function startGame() {
-    console.log(`🎮 Starting Speedle (${gameMode.toUpperCase()} mode) for ${username}`);
+    console.log("🎮 Starting game...");
 
+    // Check if the player has already played today in Daily Mode
+    if (gameMode === "daily") {
+        let leaderboardKey = "dailyLeaderboard";
+        let leaderboard = JSON.parse(localStorage.getItem(leaderboardKey)) || [];
+        let today = new Date().toDateString();
+
+        let existingEntry = leaderboard.find(entry => entry.username === username && entry.date === today);
+
+        if (existingEntry) {
+            // ✅ Player has already completed today's Speedle!
+            let rank = leaderboard.findIndex(entry => entry.username === username) + 1;
+            let timeUntilReset = getTimeUntilMidnight();
+
+            alert(`🚫 You have already completed your daily Speedle today!\n🏆 You are currently #${rank} on the leaderboard!\n⏳ Check back in ${timeUntilReset} to play again, or try Unlimited Mode!`);
+
+            return; // Stop game from starting
+        }
+    }
+
+    // ✅ Proceed with starting the game if no duplicate entry
     document.getElementById("mode-selection-screen").classList.add("hidden");
     document.getElementById("game-screen").classList.remove("hidden");
 
-    startTime = performance.now();  // Start the timer
+    startTime = performance.now();
     updateTimer();
 
     gameOrder = gameMode === "daily" ? [...dailyGames] : [...unlimitedGames];
-    gameOrder.sort(() => Math.random() - 0.5);  // Shuffle the game order
+    gameOrder.sort(() => Math.random() - 0.5);
 
     currentGame = 0;
     loadGame();
+}
+
+/**
+ * ⏳ Calculates time remaining until the leaderboard resets at midnight.
+ * @returns {string} Time remaining in HH:MM format
+ */
+function getTimeUntilMidnight() {
+    let now = new Date();
+    let midnight = new Date(now);
+    midnight.setHours(24, 0, 0, 0); // Set time to 00:00 of next day
+
+    let diff = midnight - now; // Time difference in milliseconds
+    let hours = Math.floor(diff / (1000 * 60 * 60));
+    let minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    return `${hours}h ${minutes}m`;
 }
 
 /**
