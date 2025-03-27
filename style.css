@@ -156,3 +156,58 @@ h3, h4 {
     display: inline-block;
 }
 
+/* ✅ Styles for Score Entry UI */
+#score-entry-container {
+    text-align: center; /* Center align text */
+    margin-top: 20px; /* Spacing from the game title */
+}
+
+#score-entry-container p {
+    font-size: 18px; /* Match existing font size */
+    font-weight: bold; /* Make it stand out */
+    color: #fff; /* Match site color */
+    margin-bottom: 10px; /* Spacing */
+}
+
+/* ✅ Styled Score Input */
+#score-input {
+    width: 200px; /* Balanced width */
+    padding: 10px;
+    font-size: 16px;
+    text-align: center;
+    border: 2px solid #4CAF50; /* Green border */
+    border-radius: 5px;
+    background-color: #222; /* Dark background */
+    color: #fff; /* White text */
+    outline: none;
+    transition: border 0.3s ease-in-out;
+}
+
+#score-input:focus {
+    border-color: #66ff66; /* Brighter green on focus */
+}
+
+/* ✅ Styled Submit Button */
+#submit-score-btn {
+    display: block;
+    margin: 15px auto 0; /* Center button */
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    background-color: #4CAF50; /* Match site’s button style */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+#submit-score-btn:hover {
+    background-color: #45a049; /* Slightly darker green on hover */
+}
+
+#submit-score-btn:disabled {
+    background-color: #777; /* Greyed out if disabled */
+    cursor: not-allowed;
+}
+
