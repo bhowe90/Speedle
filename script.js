@@ -103,7 +103,7 @@ function loadGame() {
 }
 
 /**
- * ✅ Tracks when the game window is closed and asks for score input
+ * ✅ Tracks when the game window is closed and enables score entry
  */
 function trackGameWindow(gameWindow, gameName) {
     console.log(`🔍 Tracking ${gameName} window...`);
@@ -113,27 +113,40 @@ function trackGameWindow(gameWindow, gameName) {
             console.log(`✅ Player closed ${gameName} window!`);
             clearInterval(checkWindow);
 
-            let score = prompt(`Enter your final score for ${gameName}:`);
+            // ✅ Show score entry UI
+            document.getElementById("score-entry-container").classList.remove("hidden");
+            document.getElementById("current-game-name").innerText = gameName;
+            document.getElementById("score-input").value = "";
+            document.getElementById("submit-score-btn").disabled = true;
 
-            if (score && !isNaN(score)) {
-                console.log(`🏆 Score recorded for ${gameName}: ${score}`);
-                scores[gameName] = { score: parseInt(score, 10) }; // ✅ Store score as an object
-            } else {
-                console.warn(`⚠️ Invalid score entered for ${gameName}. Assigning 0.`);
-                scores[gameName] = { score: 0 }; // ✅ Store default value correctly
-            }
+            // ✅ Enable button only when a valid score is entered
+            document.getElementById("score-input").addEventListener("input", function () {
+                document.getElementById("submit-score-btn").disabled = this.value.trim() === "" || isNaN(this.value) || parseInt(this.value) < 0;
+            });
 
-            currentGame++;
+            // ✅ Handle score submission
+            document.getElementById("submit-score-btn").onclick = function () {
+                let score = parseInt(document.getElementById("score-input").value, 10);
+                
+                if (!isNaN(score) && score >= 0) {
+                    console.log(`🏆 Score recorded for ${gameName}: ${score}`);
+                    scores[gameName] = { score: score };
+                    
+                    // ✅ Hide score entry UI and proceed to next game
+                    document.getElementById("score-entry-container").classList.add("hidden");
+                    currentGame++;
 
-            // ✅ If this was the last game, end the speedrun
-            if (currentGame >= gameOrder.length) {
-                endSpeedrun();
-            } else {
-                loadGame();
-            }
+                    if (currentGame >= gameOrder.length) {
+                        endSpeedrun();
+                    } else {
+                        loadGame();
+                    }
+                }
+            };
         }
     }, 1000);
 }
+
 
 /**
  * ✅ Updates the LiveSplit-style speedrun timer
