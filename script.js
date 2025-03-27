@@ -104,22 +104,6 @@ function startGame() {
     loadGame();
 }
 
-
-    // ✅ Proceed with starting the game if no duplicate entry
-    document.getElementById("mode-selection-screen").classList.add("hidden");
-    document.getElementById("game-screen").classList.remove("hidden");
-
-    startTime = performance.now();
-    updateTimer();
-
-    gameOrder = gameMode === "daily" ? [...dailyGames] : [...unlimitedGames];
-    gameOrder.sort(() => Math.random() - 0.5);
-
-    currentGame = 0;
-    loadGame();
-}
-
-
 /**
  * ⏳ Calculates time remaining until the leaderboard resets at midnight.
  * @returns {string} Time remaining in HH:MM format
