@@ -1,30 +1,40 @@
-/**
- * ✅ Saves the player's result to the appropriate leaderboard (Daily or Unlimited)
- * ✅ Sorts leaderboard by time (fastest first)
- * ✅ Updates the leaderboard display after saving
- */
-function saveToLeaderboard(username, time, scores, gameOrder, mode) {
-    console.log(`📝 Saving ${username}'s result to the ${mode} leaderboard...`);
+function saveToLeaderboard(username, completionTime, scores, gameOrder, gameMode) {
+    console.log("💾 Saving to leaderboard...");
 
-    let leaderboardKey = mode === "daily" ? "dailyLeaderboard" : "unlimitedLeaderboard";
+    let leaderboardKey = gameMode === "daily" ? "dailyLeaderboard" : "unlimitedLeaderboard";
+
+    // Retrieve leaderboard from local storage or initialize empty array
     let leaderboard = JSON.parse(localStorage.getItem(leaderboardKey)) || [];
 
-    leaderboard.push({ 
-        username, 
-        time, 
-        scores, 
-        gameOrder, 
-        date: new Date().toDateString() // Store today's date for daily resets
-    });
+    // Calculate total score
+    let totalScore = gameOrder.reduce((sum, game) => sum + (scores[game.name] || 0), 0);
 
-    // ✅ Sort leaderboard by fastest time (ascending order)
-    leaderboard.sort((a, b) => a.time - b.time);
+    // Check if the player already exists in the leaderboard (daily mode only)
+    let existingPlayerIndex = leaderboard.findIndex(entry => entry.username === username);
+
+    if (existingPlayerIndex !== -1 && gameMode === "daily") {
+        // 🛑 Prevent duplicate entries in daily leaderboard!
+        let existingPlayer = leaderboard[existingPlayerIndex];
+
+        if (totalScore > existingPlayer.totalScore) {
+            console.log(`🔄 Updating ${username}'s score. New: ${totalScore}, Old: ${existingPlayer.totalScore}`);
+            leaderboard[existingPlayerIndex] = { username, totalScore, completionTime };
+        } else {
+            console.warn(`⚠️ ${username} already exists with a better or equal score. No update.`);
+        }
+    } else {
+        // Add new entry to the leaderboard
+        leaderboard.push({ username, totalScore, completionTime });
+        console.log(`✅ Added ${username} to the leaderboard.`);
+    }
+
+    // Save updated leaderboard to local storage
     localStorage.setItem(leaderboardKey, JSON.stringify(leaderboard));
 
-    console.log(`✅ Leaderboard updated for ${mode}. Total entries: ${leaderboard.length}`);
-    
-    displayLeaderboard(mode);
+    // Refresh leaderboard display
+    updateLeaderboardDisplay(leaderboardKey);
 }
+
 
 /**
  * ✅ Checks if a username has already played Daily Mode today
