@@ -37,22 +37,29 @@
         <div id="leaderboard-home"></div>
     </div>
 
-    <!-- ✅ Game Screen (Appears when a speedrun starts) -->
-    <div id="game-screen" class="hidden">
-        <!-- Game Logo -->
-        <div id="logo-container">
-            <img src="speedle 2.png" alt="Speedle Logo" id="speedle-logo">
-        </div>
-
-        <!-- ✅ Displays the current game & round number -->
-        <h2 id="game-title"></h2>
-
-        <!-- ✅ Speedrun Timer (Styled like LiveSplit) -->
-        <div id="timer-container">
-            <p id="speedrun-text">Speedrun Timer:</p>
-            <div id="timer">00m 00s 000ms</div>
-        </div>
+   <!-- ✅ Game Screen (Now includes a score input field) -->
+<div id="game-screen" class="hidden">
+    <!-- Game Logo -->
+    <div id="logo-container">
+        <img src="speedle 2.png" alt="Speedle Logo" id="speedle-logo">
     </div>
+
+    <!-- ✅ Displays the current game & round number -->
+    <h2 id="game-title"></h2>
+
+    <!-- ✅ Speedrun Timer -->
+    <div id="timer-container">
+        <p id="speedrun-text">Speedrun Timer:</p>
+        <div id="timer">00m 00s 000ms</div>
+    </div>
+
+    <!-- ✅ Score Entry Section -->
+    <div id="score-entry-container" class="hidden">
+        <p>Enter your score for <span id="current-game-name"></span>:</p>
+        <input type="number" id="score-input" min="0" placeholder="Enter score">
+        <button id="submit-score-btn" disabled>Submit Score</button>
+    </div>
+</div>
 
     <!-- ✅ Leaderboard Screen (Appears when speedrun is finished) -->
     <div id="leaderboard-screen" class="hidden">
