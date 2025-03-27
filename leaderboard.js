@@ -2,37 +2,36 @@ function saveToLeaderboard(username, completionTime, scores, gameOrder, gameMode
     console.log("💾 Saving to leaderboard...");
 
     let leaderboardKey = gameMode === "daily" ? "dailyLeaderboard" : "unlimitedLeaderboard";
-
-    // Retrieve leaderboard from local storage or initialize empty array
     let leaderboard = JSON.parse(localStorage.getItem(leaderboardKey)) || [];
 
-    // Calculate total score
+    // ✅ Calculate total score
     let totalScore = gameOrder.reduce((sum, game) => sum + (scores[game.name] || 0), 0);
 
-    // Check if the player already exists in the leaderboard (daily mode only)
-    let existingPlayerIndex = leaderboard.findIndex(entry => entry.username === username);
+    // ✅ Prevent duplicate daily entries
+    let today = new Date().toDateString();
+    let existingPlayerIndex = leaderboard.findIndex(entry => entry.username === username && entry.date === today);
 
     if (existingPlayerIndex !== -1 && gameMode === "daily") {
-        // 🛑 Prevent duplicate entries in daily leaderboard!
-        let existingPlayer = leaderboard[existingPlayerIndex];
-
-        if (totalScore > existingPlayer.totalScore) {
-            console.log(`🔄 Updating ${username}'s score. New: ${totalScore}, Old: ${existingPlayer.totalScore}`);
-            leaderboard[existingPlayerIndex] = { username, totalScore, completionTime };
-        } else {
-            console.warn(`⚠️ ${username} already exists with a better or equal score. No update.`);
-        }
-    } else {
-        // Add new entry to the leaderboard
-        leaderboard.push({ username, totalScore, completionTime });
-        console.log(`✅ Added ${username} to the leaderboard.`);
+        console.warn(`⚠️ ${username} has already played daily mode today!`);
+        return; // 🚫 Don't allow replays
     }
 
-    // Save updated leaderboard to local storage
+    // ✅ Compute final rank score (70% score, 30% speed)
+    let scoreRank = calculateScoreRank(totalScore, leaderboard);
+    let speedRank = calculateSpeedRank(completionTime, leaderboard);
+    let finalScore = (0.7 * scoreRank) + (0.3 * speedRank);
+
+    // ✅ Save the new entry
+    leaderboard.push({ username, totalScore, completionTime, finalScore, date: today });
+
+    // ✅ Sort by final score (higher is better)
+    leaderboard.sort((a, b) => b.finalScore - a.finalScore);
     localStorage.setItem(leaderboardKey, JSON.stringify(leaderboard));
 
-    // Refresh leaderboard display
+    // ✅ Refresh the leaderboard display
     updateLeaderboardDisplay(leaderboardKey);
+
+    console.log(`✅ Leaderboard updated for ${gameMode}. Total entries: ${leaderboard.length}`);
 }
 
 
