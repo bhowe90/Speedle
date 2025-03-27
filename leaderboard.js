@@ -65,11 +65,11 @@ function checkLeaderboardReset() {
 
 /**
  * ✅ Displays the leaderboard on the END SCREEN
- * ✅ Fixes the issue where scores were appearing as "undefined"
+ * ✅ Uses Speed & Accuracy Rank-Based System (70% Score, 30% Speed)
  */
 function displayLeaderboard(mode) {
-    console.log(`📊 Displaying ${mode} leaderboard...`);
-    
+    console.log(`📊 Displaying ${mode} leaderboard with ranking system...`);
+
     let leaderboardKey = mode === "daily" ? "dailyLeaderboard" : "unlimitedLeaderboard";
     let leaderboard = JSON.parse(localStorage.getItem(leaderboardKey)) || [];
     let leaderboardTable = document.getElementById("leaderboard-table");
@@ -79,31 +79,62 @@ function displayLeaderboard(mode) {
         return;
     }
 
-    leaderboardTable.innerHTML = "<tr><th>Rank</th><th>Username</th><th>Time</th><th>Game Order</th><th>Scores</th></tr>";
+    leaderboardTable.innerHTML = "<tr><th>Rank</th><th>Username</th><th>Final Score</th><th>Time</th><th>Game Order</th><th>Scores</th></tr>";
 
     if (leaderboard.length === 0) {
         console.log("ℹ️ No leaderboard entries yet.");
-        leaderboardTable.innerHTML += "<tr><td colspan='5'>No entries yet</td></tr>";
+        leaderboardTable.innerHTML += "<tr><td colspan='6'>No entries yet</td></tr>";
         return;
     }
 
-    leaderboard.forEach((entry, index) => {
-        let rank = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1;
+    // ✅ Step 1: Extract Scores & Times
+    let scoreRankings = leaderboard.map(entry => ({
+        username: entry.username,
+        baseScore: Object.values(entry.scores).reduce((sum, game) => sum + game.score, 0),
+        completionTime: entry.time
+    }));
 
-        // ✅ Fix how scores are displayed
+    // ✅ Step 2: Rank Players by Score (Higher is better)
+    scoreRankings.sort((a, b) => b.baseScore - a.baseScore);
+    scoreRankings.forEach((player, index) => {
+        player.scoreRank = ((scoreRankings.length - index - 1) / (scoreRankings.length - 1)) * 100 || 100;
+    });
+
+    // ✅ Step 3: Rank Players by Speed (Lower is better)
+    scoreRankings.sort((a, b) => a.completionTime - b.completionTime);
+    scoreRankings.forEach((player, index) => {
+        player.speedRank = ((scoreRankings.length - index - 1) / (scoreRankings.length - 1)) * 100 || 100;
+    });
+
+    // ✅ Step 4: Compute Final Score (70% Score Rank + 30% Speed Rank)
+    const weightScore = 70;
+    const weightSpeed = 30;
+
+    scoreRankings.forEach(player => {
+        player.finalScore = ((weightScore * player.scoreRank) + (weightSpeed * player.speedRank)) / 100;
+    });
+
+    // ✅ Step 5: Sort by Final Score
+    scoreRankings.sort((a, b) => b.finalScore - a.finalScore);
+
+    // ✅ Step 6: Display the Leaderboard
+    scoreRankings.forEach((player, index) => {
+        let entry = leaderboard.find(entry => entry.username === player.username);
+        let rank = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1;
         let scoreDetails = Object.entries(entry.scores)
-            .map(([game, data]) => `${game}: ${data && data.score !== undefined ? data.score : 0}`) // ✅ Prevent "undefined" values
+            .map(([game, data]) => `${game}: ${data.score}`)
             .join(" | ");
 
         leaderboardTable.innerHTML += `<tr>
             <td>${rank}</td>
             <td>${entry.username}</td>
+            <td>${player.finalScore.toFixed(2)}</td>
             <td>${formatTime(entry.time)}</td>
             <td>${entry.gameOrder.map(g => g.name).join(" → ")}</td>
             <td>${scoreDetails}</td>
         </tr>`;
 
-        console.log(`🏆 ${rank} - ${entry.username}: ${entry.time}s, Scores: ${scoreDetails}`);
+        console.log(`🏆 ${rank} - ${entry.username}: Final Score ${player.finalScore.toFixed(2)}`);
     });
 }
 
