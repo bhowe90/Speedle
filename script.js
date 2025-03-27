@@ -84,6 +84,8 @@ function startGame() {
 
             alert(`🚫 You have already completed your daily Speedle today!\n🏆 You are currently #${rank} on the leaderboard!\n⏳ Check back in ${timeUntilReset} to play again, or try Unlimited Mode!`);
 
+            // ✅ Force refresh of leaderboard on home screen
+            displayLeaderboard("daily");
             return; // Stop game from starting
         }
     }
@@ -101,6 +103,7 @@ function startGame() {
     currentGame = 0;
     loadGame();
 }
+
 
 /**
  * ⏳ Calculates time remaining until the leaderboard resets at midnight.
